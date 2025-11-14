@@ -50,11 +50,11 @@ import {
 } from '@/components/ui/tooltip'
 import { ConfigDrawer } from '@/components/config-drawer'
 import { ConfirmDialog } from '@/components/confirm-dialog'
+import { ContentSection } from '@/components/content-section'
 import { Header } from '@/components/layout/header'
 import { Main } from '@/components/layout/main'
 import { ProfileDropdown } from '@/components/profile-dropdown'
 import { ThemeSwitch } from '@/components/theme-switch'
-import { ContentSection } from '@/features/settings/components/content-section'
 import { documents } from '../data/documents'
 
 const textPageSchema = z.object({
@@ -807,7 +807,7 @@ export function DocumentSettings() {
                                   onChange={handleFileInputChange}
                                   className='hidden'
                                 />
-                                <CloudUpload className='mx-auto mb-4 h-12 w-12 text-green-400' />
+                                <CloudUpload className='mx-auto mb-4 h-12 w-12' />
                                 <p className='mb-2 text-sm font-medium'>
                                   ファイルをここにドラッグアンドドロップするか、クリックしてファイルを選択してください
                                 </p>

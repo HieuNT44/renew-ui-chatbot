@@ -16,6 +16,7 @@ export function DataTableBulkActions({ table }: DataTableBulkActionsProps) {
   return (
     <BulkActionsToolbar table={table} entityName='document'>
       {/* Add bulk actions here if needed */}
+      <></>
     </BulkActionsToolbar>
   )
 }
