@@ -1,0 +1,113 @@
+@import 'tailwindcss';
+@import 'tw-animate-css';
+@import './theme.css';
+
+@custom-variant dark (&:is(.dark *));
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+    scrollbar-width: thin;
+    scrollbar-color: var(--border) transparent;
+  }
+  html {
+    @apply overflow-x-hidden;
+  }
+  body {
+    @apply bg-background text-foreground has-[div[data-variant='inset']]:bg-sidebar min-h-svh w-full;
+  }
+
+  /* Override Radix scroll locking for sticky headers */
+  body[data-scroll-locked] {
+    overflow: unset !important;
+  }
+
+  /* Cursor pointer for buttons */
+  button:not(:disabled),
+  [role='button']:not(:disabled) {
+    cursor: pointer;
+  }
+
+  /* Prevent focus zoom on mobile devices */
+  @media screen and (max-width: 767px) {
+    input,
+    select,
+    textarea {
+      font-size: 16px !important;
+    }
+  }
+}
+
+@utility container {
+  margin-inline: auto;
+  padding-inline: 2rem;
+}
+
+@utility no-scrollbar {
+  /* Hide scrollbar for Chrome, Safari and Opera */
+  &::-webkit-scrollbar {
+    display: none;
+  }
+  /* Hide scrollbar for IE, Edge and Firefox */
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none; /* Firefox */
+}
+
+/* Sonner toast success styling */
+.toaster [data-sonner-toast][data-type='success'] {
+  background-color: oklch(0.6 0.15 150) !important;
+  color: oklch(0.984 0.003 247.858) !important;
+  border-color: oklch(0.6 0.15 150) !important;
+}
+
+.dark .toaster [data-sonner-toast][data-type='success'] {
+  background-color: oklch(0.65 0.15 150) !important;
+  color: oklch(0.984 0.003 247.858) !important;
+  border-color: oklch(0.65 0.15 150) !important;
+}
+
+/* Sonner toast error styling */
+.toaster [data-sonner-toast][data-type='error'] {
+  background-color: oklch(0.577 0.245 27.325) !important;
+  color: oklch(0.984 0.003 247.858) !important;
+  border-color: oklch(0.577 0.245 27.325) !important;
+}
+
+.dark .toaster [data-sonner-toast][data-type='error'] {
+  background-color: oklch(0.704 0.191 22.216) !important;
+  color: oklch(0.984 0.003 247.858) !important;
+  border-color: oklch(0.704 0.191 22.216) !important;
+}
+
+@utility faded-bottom {
+  @apply after:pointer-events-none after:absolute after:start-0 after:bottom-0 after:hidden after:h-32 after:w-full after:rounded-b-2xl after:bg-[linear-gradient(180deg,_transparent_10%,_var(--background)_70%)] md:after:block;
+}
+
+/* styles.css */
+.CollapsibleContent {
+  overflow: hidden;
+}
+.CollapsibleContent[data-state='open'] {
+  animation: slideDown 300ms ease-out;
+}
+.CollapsibleContent[data-state='closed'] {
+  animation: slideUp 300ms ease-out;
+}
+
+@keyframes slideDown {
+  from {
+    height: 0;
+  }
+  to {
+    height: var(--radix-collapsible-content-height);
+  }
+}
+
+@keyframes slideUp {
+  from {
+    height: var(--radix-collapsible-content-height);
+  }
+  to {
+    height: 0;
+  }
+}
