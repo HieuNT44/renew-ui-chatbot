@@ -150,20 +150,18 @@ export const documentsColumns: ColumnDef<Document>[] = [
 
       return (
         <div className='flex items-center gap-2 text-sm'>
-          {documentTypes.map((type, index) => (
-            <div key={type} className='flex items-center gap-2'>
-              {index > 0 && <span className='text-muted-foreground'>|</span>}
-              <Badge
-                variant='outline'
-                className={cn(
-                  'flex items-center gap-1',
-                  typeConfig[type].className
-                )}
-              >
-                {typeConfig[type].icon}
-                <span>{typeConfig[type].label}</span>
-              </Badge>
-            </div>
+          {documentTypes.map((type) => (
+            <Badge
+              key={type}
+              variant='outline'
+              className={cn(
+                'flex items-center gap-1',
+                typeConfig[type].className
+              )}
+            >
+              {typeConfig[type].icon}
+              <span>{typeConfig[type].label}</span>
+            </Badge>
           ))}
         </div>
       )
