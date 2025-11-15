@@ -22,9 +22,11 @@ export function DataTablePagination<TData>({
       style={{ overflowClipMargin: 1 }}
     >
       <div className='flex items-center gap-2'>
-        <div className='flex items-center justify-center text-sm font-medium'>
-          ページ {currentPage} / {totalPages}
-        </div>
+        {totalPages > 1 && (
+          <div className='text-muted-foreground flex items-center justify-center text-sm'>
+            {currentPage} / {totalPages}
+          </div>
+        )}
         <div className='flex items-center space-x-1'>
           <Button
             variant='outline'

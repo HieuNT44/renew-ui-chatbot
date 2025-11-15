@@ -53,7 +53,6 @@ import { ConfirmDialog } from '@/components/confirm-dialog'
 import { ContentSection } from '@/components/content-section'
 import { Header } from '@/components/layout/header'
 import { Main } from '@/components/layout/main'
-import { ProfileDropdown } from '@/components/profile-dropdown'
 import { ThemeSwitch } from '@/components/theme-switch'
 import { documents } from '../data/documents'
 
@@ -644,7 +643,6 @@ export function DocumentSettings() {
         <div className='ms-auto flex items-center space-x-4'>
           <ThemeSwitch />
           <ConfigDrawer />
-          <ProfileDropdown />
         </div>
       </Header>
 

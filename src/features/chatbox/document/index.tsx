@@ -2,7 +2,6 @@ import { getRouteApi } from '@tanstack/react-router'
 import { ConfigDrawer } from '@/components/config-drawer'
 import { Header } from '@/components/layout/header'
 import { Main } from '@/components/layout/main'
-import { Search } from '@/components/search'
 import { ThemeSwitch } from '@/components/theme-switch'
 import { DocumentsTable } from './components/documents-table'
 import { documents } from './data/documents'
@@ -28,7 +27,6 @@ export function TrainingDocument() {
   return (
     <>
       <Header fixed title='出展者ＢＯＴの管理 | 株式会社日本医工研究所'>
-        <Search />
         <div className='ms-auto flex items-center space-x-4'>
           <ThemeSwitch />
           <ConfigDrawer />
