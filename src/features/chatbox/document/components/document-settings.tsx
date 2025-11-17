@@ -653,7 +653,7 @@ export function DocumentSettings() {
           </h1>
         </div>
         <Separator className='my-2 lg:my-4' />
-        <div className='flex flex-1 flex-col space-y-2 overflow-hidden md:space-y-2 lg:flex-row lg:space-y-0 lg:space-x-12'>
+        <div className='flex flex-1 flex-col space-y-2 overflow-y-auto pr-2 md:space-y-2 lg:flex-row lg:space-y-0 lg:space-x-12'>
           <aside className='top-0 flex items-start lg:sticky lg:w-1/5'>
             <div className='mb-4 p-1 md:hidden'>
               <Select value={activeTab} onValueChange={setActiveTab}>
@@ -710,10 +710,11 @@ export function DocumentSettings() {
               </nav>
             </ScrollArea>
           </aside>
-          <div className='flex w-full overflow-y-hidden p-1'>
+          <div className='flex w-full overflow-y-auto p-1 pr-4'>
             <ContentSection
               title={activeTabItem?.contentTitle || ''}
               desc={activeTabItem?.contentDesc || ''}
+              className='w-[90%] pb-2'
             >
               <Form {...form}>
                 <form
@@ -726,7 +727,7 @@ export function DocumentSettings() {
                       e.preventDefault()
                     }
                   }}
-                  className='space-y-6'
+                  className='w-full space-y-6'
                 >
                   <FormField
                     control={form.control}
