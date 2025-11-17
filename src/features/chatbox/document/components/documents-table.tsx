@@ -168,6 +168,7 @@ export function DocumentsTable({ data, search, navigate }: DataTableProps) {
                 <TableRow
                   key={row.id}
                   data-state={row.getIsSelected() && 'selected'}
+                  className='group'
                 >
                   {row.getVisibleCells().map((cell) => (
                     <TableCell

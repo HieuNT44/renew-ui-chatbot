@@ -92,8 +92,10 @@ export const documentsColumns: ColumnDef<Document>[] = [
       <LongText className='w-full font-medium'>{row.getValue('name')}</LongText>
     ),
     meta: {
-      className: cn('sticky start-0 z-10 w-[300px] min-w-[300px]'),
-      tdClassName: cn('sticky start-0 z-10 bg-white dark:bg-gray-950'),
+      className: cn('sticky start-0 z-20 w-[300px] min-w-[300px]'),
+      tdClassName: cn(
+        'sticky start-0 z-20 bg-white dark:bg-gray-950 group-hover:!bg-[#F4F8FA]'
+      ),
       style: { backgroundColor: '#F4F8FA' },
     },
     enableHiding: false,
@@ -214,8 +216,10 @@ export const documentsColumns: ColumnDef<Document>[] = [
       )
     },
     meta: {
-      className: cn('sticky end-0 z-10'),
-      tdClassName: cn('sticky end-0 z-10 bg-white dark:bg-gray-950'),
+      className: cn('sticky end-0 z-20'),
+      tdClassName: cn(
+        'sticky end-0 z-20 bg-white dark:bg-gray-950 group-hover:!bg-[#F4F8FA]'
+      ),
       style: { backgroundColor: '#F4F8FA' },
     },
     enableSorting: false,
