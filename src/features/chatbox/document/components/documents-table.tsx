@@ -128,7 +128,7 @@ export function DocumentsTable({ data, search, navigate }: DataTableProps) {
         </div>
         <AddDocumentButton />
       </div>
-      <div className='overflow-hidden rounded-md border'>
+      <div className='overflow-x-auto rounded-md border'>
         <Table>
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
@@ -141,9 +141,14 @@ export function DocumentsTable({ data, search, navigate }: DataTableProps) {
                     <TableHead
                       key={header.id}
                       className={cn(
-                        'bg-muted/50 text-foreground px-4 font-bold',
+                        'text-foreground px-4 font-bold',
                         header.column.columnDef.meta?.className
                       )}
+                      style={
+                        header.column.columnDef.meta?.style || {
+                          backgroundColor: '#F4F8FA',
+                        }
+                      }
                     >
                       {header.isPlaceholder
                         ? null
@@ -169,8 +174,7 @@ export function DocumentsTable({ data, search, navigate }: DataTableProps) {
                       key={cell.id}
                       className={cn(
                         'px-4',
-                        cell.column.columnDef.meta?.tdClassName,
-                        cell.column.columnDef.meta?.className
+                        cell.column.columnDef.meta?.tdClassName
                       )}
                     >
                       {flexRender(

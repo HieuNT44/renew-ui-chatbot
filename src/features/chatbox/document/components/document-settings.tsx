@@ -268,6 +268,9 @@ export function DocumentSettings() {
 
   const form = useForm<DocumentSettingsFormValues>({
     resolver: zodResolver(documentSettingsSchema),
+    mode: 'onSubmit',
+    reValidateMode: 'onSubmit',
+    shouldFocusError: false,
     defaultValues: {
       name: sampleData.name,
       website: sampleData.website,
@@ -544,13 +547,68 @@ export function DocumentSettings() {
     form.setValue('files', newFiles)
   }
 
-  const handleUpdate = async (_data: DocumentSettingsFormValues) => {
+  const handleTabChange = (newTab: string) => {
+    // Clear errors from the tab we're leaving
+    if (activeTab === 'file') {
+      form.clearErrors('files')
+    } else if (activeTab === 'text') {
+      form.clearErrors('textPages')
+    }
+    // Switch to new tab
+    setActiveTab(newTab)
+  }
+
+  const validateActiveTab = (data: DocumentSettingsFormValues): boolean => {
+    // Clear errors from other tabs first
+    if (activeTab !== 'file') {
+      form.clearErrors('files')
+    }
+
+    // Validate based on active tab only
+    if (activeTab === 'file') {
+      if (!data.files || data.files.length === 0) {
+        form.setError('files', {
+          type: 'manual',
+          message: '少なくとも1つのファイルをアップロードしてください',
+        })
+        return false
+      }
+    } else if (activeTab === 'website') {
+      const enabledPages = crawledPages.filter((page) => page.isEnabled)
+      if (enabledPages.length === 0) {
+        return false
+      }
+    }
+
+    return true
+  }
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    const data = form.getValues()
+
+    // Validate active tab first
+    const isTabValid = validateActiveTab(data)
+    if (!isTabValid) {
+      return
+    }
+
+    // Validate name field
+    const isNameValid = await form.trigger('name')
+    if (!isNameValid) {
+      return
+    }
+
+    // All validations passed, proceed with update
+    await handleUpdate()
+  }
+
+  const handleUpdate = async () => {
     setIsLoading(true)
     try {
       // TODO: Implement update functionality
       await new Promise((resolve) => setTimeout(resolve, 1000))
       toast.success('ドキュメントが正常に更新されました')
-      navigate({ to: '/chatbox/document' })
     } catch {
       toast.error('更新に失敗しました')
     } finally {
@@ -656,7 +714,7 @@ export function DocumentSettings() {
         <div className='flex flex-1 flex-col space-y-2 overflow-y-auto pr-2 md:space-y-2 lg:flex-row lg:space-y-0 lg:space-x-12'>
           <aside className='top-0 flex items-start lg:sticky lg:w-1/5'>
             <div className='mb-4 p-1 md:hidden'>
-              <Select value={activeTab} onValueChange={setActiveTab}>
+              <Select value={activeTab} onValueChange={handleTabChange}>
                 <SelectTrigger className='h-12 w-48'>
                   <div className='flex items-center gap-2'>
                     <span className='scale-125'>
@@ -695,7 +753,7 @@ export function DocumentSettings() {
                     key={item.value}
                     type='button'
                     variant='ghost'
-                    onClick={() => setActiveTab(item.value)}
+                    onClick={() => handleTabChange(item.value)}
                     className={cn(
                       'w-50 justify-start',
                       activeTab === item.value
@@ -718,7 +776,7 @@ export function DocumentSettings() {
             >
               <Form {...form}>
                 <form
-                  onSubmit={form.handleSubmit(handleUpdate)}
+                  onSubmit={handleSubmit}
                   onKeyDown={(e) => {
                     if (
                       e.key === 'Enter' &&
@@ -736,6 +794,7 @@ export function DocumentSettings() {
                       <FormItem>
                         <span className='mb-2 block text-sm font-bold'>
                           ドキュメント名
+                          <span className='text-destructive ml-1'>*</span>
                         </span>
                         <FormControl>
                           <Input
@@ -758,6 +817,7 @@ export function DocumentSettings() {
                             <div className='flex items-center gap-2'>
                               <span className='block text-sm font-bold'>
                                 ファイルアップロード
+                                <span className='text-destructive ml-1'>*</span>
                               </span>
                               <Tooltip>
                                 <TooltipTrigger asChild>
@@ -1079,137 +1139,143 @@ export function DocumentSettings() {
                   )}
 
                   {activeTab === 'text' && (
-                    <>
-                      <div className='space-y-4'>
-                        <div className='mb-2 flex items-center gap-2'>
-                          <span className='block text-sm font-bold'>
-                            コンテンツ
-                          </span>
-                          <Tooltip>
-                            <TooltipTrigger asChild>
-                              <Info className='text-muted-foreground h-4 w-4 cursor-help' />
-                            </TooltipTrigger>
-                            <TooltipContent className='max-w-xs'>
-                              <div className='space-y-1 text-xs'>
-                                <p>
-                                  複数のページを作成し、各ページに名前とコンテンツを設定できます。
-                                </p>
-                                <p>
-                                  各ページのコンテンツは、BOTの知識ベースとして使用され、質問への回答に活用されます。
-                                </p>
-                              </div>
-                            </TooltipContent>
-                          </Tooltip>
-                        </div>
-                        {textPages.map((page) => (
-                          <Collapsible
-                            key={page.id}
-                            open={openCollapsibles.has(page.id)}
-                            onOpenChange={() => toggleCollapsible(page.id)}
-                          >
-                            <div className='rounded-lg border'>
-                              <CollapsibleTrigger className='hover:bg-muted/50 flex w-full items-center justify-between p-4'>
-                                <div className='flex items-center gap-2'>
-                                  <span className='font-medium'>
-                                    {page.pageName
-                                      ? `${page.pageName}ページ`
-                                      : '新しいページ'}
-                                  </span>
-                                </div>
-                                <div className='flex items-center gap-2'>
-                                  <Button
-                                    type='button'
-                                    variant='ghost'
-                                    size='icon'
-                                    onClick={(e) => {
-                                      e.stopPropagation()
-                                      handleRemoveTextPage(page.id)
-                                    }}
-                                    className='text-destructive hover:bg-destructive/10 h-8 w-8'
-                                  >
-                                    <Trash2 className='h-4 w-4' />
-                                  </Button>
-                                  <ChevronDown
-                                    className={cn(
-                                      'h-4 w-4 transition-transform',
-                                      openCollapsibles.has(page.id) &&
-                                        'rotate-180'
-                                    )}
-                                  />
-                                </div>
-                              </CollapsibleTrigger>
-                              <CollapsibleContent className='px-4 pb-4'>
-                                <div className='space-y-4 pt-2'>
-                                  <div>
-                                    <span className='mb-2 block text-sm font-medium'>
-                                      ページ名
-                                    </span>
-                                    <Input
-                                      placeholder='ページ名を入力'
-                                      value={page.pageName}
-                                      onChange={(e) =>
-                                        handleUpdateTextPage(
-                                          page.id,
-                                          'pageName',
-                                          e.target.value
-                                        )
-                                      }
-                                    />
+                    <FormField
+                      control={form.control}
+                      name='textPages'
+                      render={() => (
+                        <FormItem>
+                          <div className='space-y-4'>
+                            <div className='mb-2 flex items-center gap-2'>
+                              <span className='block text-sm font-bold'>
+                                コンテンツ
+                              </span>
+                              <Tooltip>
+                                <TooltipTrigger asChild>
+                                  <Info className='text-muted-foreground h-4 w-4 cursor-help' />
+                                </TooltipTrigger>
+                                <TooltipContent className='max-w-xs'>
+                                  <div className='space-y-1 text-xs'>
+                                    <p>
+                                      複数のページを作成し、各ページに名前とコンテンツを設定できます。
+                                    </p>
+                                    <p>
+                                      各ページのコンテンツは、BOTの知識ベースとして使用され、質問への回答に活用されます。
+                                    </p>
                                   </div>
-                                  <div>
-                                    <span className='mb-2 block text-sm font-medium'>
-                                      コンテンツ
-                                    </span>
-                                    <Textarea
-                                      placeholder='コンテンツを入力'
-                                      value={page.content}
-                                      onChange={(e) =>
-                                        handleUpdateTextPage(
-                                          page.id,
-                                          'content',
-                                          e.target.value
-                                        )
-                                      }
-                                      className='min-h-32'
-                                    />
-                                    <div className='mt-2 flex items-center justify-end'>
-                                      <span className='text-muted-foreground text-xs'>
-                                        検出された文字数:{' '}
-                                        {page.content?.length?.toLocaleString()}
+                                </TooltipContent>
+                              </Tooltip>
+                            </div>
+                            {textPages.map((page) => (
+                              <Collapsible
+                                key={page.id}
+                                open={openCollapsibles.has(page.id)}
+                                onOpenChange={() => toggleCollapsible(page.id)}
+                              >
+                                <div className='rounded-lg border'>
+                                  <CollapsibleTrigger className='hover:bg-muted/50 flex w-full items-center justify-between p-4'>
+                                    <div className='flex items-center gap-2'>
+                                      <span className='font-medium'>
+                                        {page.pageName
+                                          ? `${page.pageName}ページ`
+                                          : '新しいページ'}
                                       </span>
                                     </div>
-                                  </div>
+                                    <div className='flex items-center gap-2'>
+                                      <Button
+                                        type='button'
+                                        variant='ghost'
+                                        size='icon'
+                                        onClick={(e) => {
+                                          e.stopPropagation()
+                                          handleRemoveTextPage(page.id)
+                                        }}
+                                        className='text-destructive hover:bg-destructive/10 h-8 w-8'
+                                      >
+                                        <Trash2 className='h-4 w-4' />
+                                      </Button>
+                                      <ChevronDown
+                                        className={cn(
+                                          'h-4 w-4 transition-transform',
+                                          openCollapsibles.has(page.id) &&
+                                            'rotate-180'
+                                        )}
+                                      />
+                                    </div>
+                                  </CollapsibleTrigger>
+                                  <CollapsibleContent className='px-4 pb-4'>
+                                    <div className='space-y-4 pt-2'>
+                                      <div>
+                                        <span className='mb-2 block text-sm font-medium'>
+                                          ページ名
+                                        </span>
+                                        <Input
+                                          placeholder='ページ名を入力'
+                                          value={page.pageName}
+                                          onChange={(e) =>
+                                            handleUpdateTextPage(
+                                              page.id,
+                                              'pageName',
+                                              e.target.value
+                                            )
+                                          }
+                                        />
+                                      </div>
+                                      <div>
+                                        <span className='mb-2 block text-sm font-medium'>
+                                          コンテンツ
+                                        </span>
+                                        <Textarea
+                                          placeholder='コンテンツを入力'
+                                          value={page.content}
+                                          onChange={(e) =>
+                                            handleUpdateTextPage(
+                                              page.id,
+                                              'content',
+                                              e.target.value
+                                            )
+                                          }
+                                          className='min-h-32'
+                                        />
+                                        <div className='mt-2 flex items-center justify-end'>
+                                          <span className='text-muted-foreground text-xs'>
+                                            検出された文字数:{' '}
+                                            {page.content?.length?.toLocaleString()}
+                                          </span>
+                                        </div>
+                                      </div>
+                                    </div>
+                                  </CollapsibleContent>
                                 </div>
-                              </CollapsibleContent>
+                              </Collapsible>
+                            ))}
+                            {textPages.length > 0 && (
+                              <div className='flex items-center justify-end'>
+                                <span className='text-muted-foreground text-sm font-medium'>
+                                  全ページの合計文字数:{' '}
+                                  {textPages
+                                    .reduce(
+                                      (sum, page) =>
+                                        sum + (page.content?.length || 0),
+                                      0
+                                    )
+                                    .toLocaleString()}
+                                </span>
+                              </div>
+                            )}
+                            <div className='flex items-center justify-center'>
+                              <Button
+                                type='button'
+                                onClick={handleAddTextPage}
+                                className='w-fit'
+                              >
+                                <Plus className='size-4' />
+                                ページを追加
+                              </Button>
                             </div>
-                          </Collapsible>
-                        ))}
-                        {textPages.length > 0 && (
-                          <div className='flex items-center justify-end'>
-                            <span className='text-muted-foreground text-sm font-medium'>
-                              全ページの合計文字数:{' '}
-                              {textPages
-                                .reduce(
-                                  (sum, page) =>
-                                    sum + (page.content?.length || 0),
-                                  0
-                                )
-                                .toLocaleString()}
-                            </span>
                           </div>
-                        )}
-                        <div className='flex items-center justify-center'>
-                          <Button
-                            type='button'
-                            onClick={handleAddTextPage}
-                            className='w-fit'
-                          >
-                            <Plus className='size-4' />
-                            ページを追加
-                          </Button>
-                        </div>
-                      </div>
-                    </>
+                        </FormItem>
+                      )}
+                    />
                   )}
 
                   <div className='flex items-center justify-end gap-4 pt-4'>

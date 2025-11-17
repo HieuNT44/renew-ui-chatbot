@@ -92,7 +92,9 @@ export const documentsColumns: ColumnDef<Document>[] = [
       <LongText className='w-full font-medium'>{row.getValue('name')}</LongText>
     ),
     meta: {
-      className: cn('max-md:sticky start-0 w-[300px] min-w-[300px]'),
+      className: cn('sticky start-0 z-10 w-[300px] min-w-[300px]'),
+      tdClassName: cn('sticky start-0 z-10 bg-white dark:bg-gray-950'),
+      style: { backgroundColor: '#F4F8FA' },
     },
     enableHiding: false,
     enableSorting: true,
@@ -210,6 +212,11 @@ export const documentsColumns: ColumnDef<Document>[] = [
           <DeleteButton document={document} />
         </div>
       )
+    },
+    meta: {
+      className: cn('sticky end-0 z-10'),
+      tdClassName: cn('sticky end-0 z-10 bg-white dark:bg-gray-950'),
+      style: { backgroundColor: '#F4F8FA' },
     },
     enableSorting: false,
     enableHiding: false,
