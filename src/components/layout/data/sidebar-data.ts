@@ -19,12 +19,12 @@ export const sidebarData: SidebarData = {
       title: 'Menu',
       items: [
         {
-          title: 'ブレイン一覧',
+          title: 'BOT一覧',
           url: '/chatbox/project',
           icon: BotIcon,
         },
         {
-          title: '学習用ドキュメント',
+          title: '学習データ',
           url: '/chatbox/document',
           icon: FileText,
         },

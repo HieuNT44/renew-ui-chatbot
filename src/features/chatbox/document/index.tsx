@@ -1,11 +1,11 @@
+import { getRouteApi, useNavigate } from '@tanstack/react-router'
+import { Plus, SearchIcon } from 'lucide-react'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
 import { ConfigDrawer } from '@/components/config-drawer'
 import { Header } from '@/components/layout/header'
 import { Main } from '@/components/layout/main'
 import { ThemeSwitch } from '@/components/theme-switch'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { getRouteApi, useNavigate } from '@tanstack/react-router'
-import { Plus, SearchIcon } from 'lucide-react'
 import { DocumentsTable } from './components/documents-table'
 import { documents } from './data/documents'
 
@@ -40,11 +40,9 @@ export function TrainingDocument() {
       <Main className='flex flex-1 flex-col gap-4 sm:gap-6'>
         <div className='flex flex-col gap-4'>
           <div>
-            <h2 className='text-2xl font-bold tracking-tight'>
-              学習用ドキュメント
-            </h2>
+            <h2 className='text-2xl font-bold tracking-tight'>学習データ</h2>
             <p className='text-muted-foreground'>
-              ここでドキュメントを管理できます
+              ここで学習データを管理できます
             </p>
           </div>
           <div className='flex items-center gap-2'>
@@ -77,7 +75,7 @@ export function TrainingDocument() {
               }}
             >
               <Plus className='mr-2 h-4 w-4' />
-              ドキュメントを追加
+              学習データを追加
             </Button>
           </div>
         </div>

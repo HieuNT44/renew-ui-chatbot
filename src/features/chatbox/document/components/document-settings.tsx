@@ -55,7 +55,7 @@ const textPageSchema = z.object({
 })
 
 const documentSettingsSchema = z.object({
-  name: z.string().min(1, 'ドキュメント名は必須です'),
+  name: z.string().min(1, '学習データ名は必須です'),
   website: z.string().optional(),
   files: z.array(z.instanceof(File)).optional(),
   textDocumentName: z.string().optional(),
@@ -597,7 +597,7 @@ export function DocumentSettings() {
     try {
       // TODO: Implement update functionality
       await new Promise((resolve) => setTimeout(resolve, 1000))
-      toast.success('ドキュメントが正常に更新されました')
+      toast.success('学習データが正常に更新されました')
     } catch {
       toast.error('更新に失敗しました')
     } finally {
@@ -615,7 +615,7 @@ export function DocumentSettings() {
       // TODO: Implement delete functionality
       await new Promise((resolve) => setTimeout(resolve, 1000))
       setShowDeleteDialog(false)
-      toast.error('ドキュメントが正常に削除されました')
+      toast.error('学習データが正常に削除されました')
       navigate({ to: '/chatbox/document' })
     } catch {
       toast.error('削除に失敗しました')
@@ -645,7 +645,7 @@ export function DocumentSettings() {
         </Header>
         <Main className='flex flex-1 flex-col items-center justify-center'>
           <p className='text-muted-foreground'>
-            ドキュメントが見つかりませんでした
+            学習データが見つかりませんでした
           </p>
         </Main>
       </>
@@ -665,7 +665,8 @@ export function DocumentSettings() {
       value: 'website',
       icon: <Globe size={18} />,
       contentTitle: 'URL クローラー',
-      contentDesc: 'URL からコンテンツを取得します。',
+      contentDesc:
+        '指定したURLからコンテンツを取得します。複数のURLを連続して追加でき、クロールは自動的にバックグラウンドで実行されます。',
     },
     {
       title: 'テキスト入力',
@@ -695,8 +696,8 @@ export function DocumentSettings() {
 
       <Main fixed>
         <div className=''>
-          <h1 className='text-lg font-bold tracking-tight md:text-xl'>
-            {isNew ? 'データ新規作成' : 'データ編集'}
+          <h1 className='text-2xl font-bold tracking-tight'>
+            {isNew ? '学習データ作成' : '学習データ編集'}
           </h1>
         </div>
         <Separator className='my-2 lg:my-3' />
@@ -716,13 +717,13 @@ export function DocumentSettings() {
                 name='name'
                 render={({ field }) => (
                   <FormItem>
-                    <span className='mb-2 block text-sm font-bold'>
-                      ドキュメント名
+                    <span className='mb-2 block text-base font-bold'>
+                      学習データ名
                       <span className='text-destructive ml-1'>*</span>
                     </span>
                     <FormControl>
                       <Input
-                        placeholder='ドキュメント名を入力'
+                        placeholder='学習データ名を入力'
                         {...field}
                         className='w-full sm:w-full md:w-1/2'
                       />
@@ -767,7 +768,7 @@ export function DocumentSettings() {
                           <FormItem>
                             <div className='mb-2 flex items-center justify-between'>
                               <div className='flex items-center gap-2'>
-                                <span className='block text-sm font-bold'>
+                                <span className='block text-base font-bold'>
                                   ファイルアップロード
                                   <span className='text-destructive ml-1'>
                                     *
@@ -879,17 +880,6 @@ export function DocumentSettings() {
                         name='website'
                         render={({ field }) => (
                           <FormItem>
-                            <div className='mb-2 flex flex-col gap-1'>
-                              <div className='flex items-center justify-between gap-2'>
-                                <span className='block text-sm font-bold'>
-                                  ウェブサイト
-                                </span>
-                              </div>
-                              <span className='text-muted-foreground text-xs'>
-                                複数のURLを連続して追加できます。クロールは自動的にバックグラウンドで実行されます。（デモモード:
-                                サンプルデータを生成します）
-                              </span>
-                            </div>
                             <FormControl>
                               <div className='flex items-center gap-2'>
                                 <Input
@@ -958,7 +948,7 @@ export function DocumentSettings() {
                             {crawledPages.length > 0 && (
                               <div className='mt-4 space-y-4'>
                                 <div className='mb-2'>
-                                  <span className='text-sm font-bold'>
+                                  <span className='text-base font-bold'>
                                     クロールされたページ
                                   </span>
                                 </div>
@@ -1102,7 +1092,7 @@ export function DocumentSettings() {
                           <FormItem>
                             <div className='space-y-4'>
                               <div className='mb-2 flex items-center gap-2'>
-                                <span className='block text-sm font-bold'>
+                                <span className='block text-base font-bold'>
                                   コンテンツ
                                 </span>
                                 <Tooltip>
@@ -1164,7 +1154,7 @@ export function DocumentSettings() {
                                     <CollapsibleContent className='px-4 pb-4'>
                                       <div className='space-y-4 pt-2'>
                                         <div>
-                                          <span className='mb-2 block text-sm font-medium'>
+                                          <span className='mb-2 block text-sm font-bold'>
                                             ページ名
                                           </span>
                                           <Input
@@ -1180,7 +1170,7 @@ export function DocumentSettings() {
                                           />
                                         </div>
                                         <div>
-                                          <span className='mb-2 block text-sm font-medium'>
+                                          <span className='mb-2 block text-sm font-bold'>
                                             コンテンツ
                                           </span>
                                           <Textarea
@@ -1285,7 +1275,7 @@ export function DocumentSettings() {
           open={showDeleteDialog}
           onOpenChange={setShowDeleteDialog}
           title='削除の確認'
-          desc='このドキュメントを削除してもよろしいですか？この操作は元に戻せません。'
+          desc='この学習データを削除してもよろしいですか？この操作は元に戻せません。'
           confirmText='削除'
           cancelBtnText='キャンセル'
           destructive

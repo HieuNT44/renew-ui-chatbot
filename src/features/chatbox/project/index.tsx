@@ -54,8 +54,8 @@ export function ListBot() {
       <Main className='flex flex-1 flex-col gap-4 sm:gap-6'>
         <div className='flex flex-col flex-wrap items-start justify-start gap-4'>
           <div>
-            <h2 className='text-2xl font-bold tracking-tight'>Bot一覧</h2>
-            <p className='text-muted-foreground'>ここでボットを管理できます</p>
+            <h2 className='text-2xl font-bold tracking-tight'>BOT一覧</h2>
+            <p className='text-muted-foreground'>ここでBOTを管理できます</p>
           </div>
           <div className='flex items-center gap-4'>
             <div className='relative max-w-sm'>

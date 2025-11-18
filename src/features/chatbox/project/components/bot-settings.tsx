@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { z } from 'zod'
-import { useForm, useWatch } from 'react-hook-form'
+import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useLocation, useNavigate } from '@tanstack/react-router'
 import { Route as UpdateRoute } from '@/routes/_authenticated/chatbox/project/update/$id'
@@ -17,7 +17,6 @@ import { toast } from 'sonner'
 import { cn } from '@/lib/utils'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
-import { Checkbox } from '@/components/ui/checkbox'
 import {
   Command,
   CommandEmpty,
@@ -193,9 +192,8 @@ const defaultEmbedScript = `<script
 </script>`
 
 const botSettingsSchema = z.object({
-  name: z.string().min(1, 'チャットボット名は必須です'),
+  name: z.string().min(1, 'BOT名は必須です'),
   trainingData: z.array(z.string()).min(1, '学習データを選択してください'),
-  enableInitialGreeting: z.boolean(),
   initialGreeting: z.string().optional(),
   embedScript: z.string(),
 })
@@ -234,11 +232,6 @@ export function BotSettings() {
           : bot?.id === '2'
             ? ['data3']
             : ['data1', 'data3', 'data4'],
-      enableInitialGreeting: isNew
-        ? false
-        : bot?.id === '1' || bot?.id === '3'
-          ? true
-          : false,
       initialGreeting: isNew
         ? ''
         : bot?.id === '1' || bot?.id === '3'
@@ -265,17 +258,12 @@ export function BotSettings() {
     toast.success('初期挨拶をリセットしました')
   }
 
-  const enableInitialGreeting = useWatch({
-    control: form.control,
-    name: 'enableInitialGreeting',
-  })
-
   const handleUpdate = async (_data: BotSettingsFormValues) => {
     setIsLoading(true)
     // TODO: Implement update functionality
     setTimeout(() => {
       setIsLoading(false)
-      toast.success('チャットボット設定が更新されました')
+      toast.success('BOT設定が更新されました')
       navigate({ to: '/chatbox/project' })
     }, 1000)
   }
@@ -287,7 +275,7 @@ export function BotSettings() {
   const handleConfirmDelete = () => {
     // TODO: Implement delete functionality
     setShowDeleteDialog(false)
-    toast.error('チャットボットが削除されました')
+    toast.error('BOTが削除されました')
     navigate({ to: '/chatbox/project' })
   }
 
@@ -328,7 +316,7 @@ export function BotSettings() {
       <Main className='flex flex-1 flex-col gap-4 sm:gap-6'>
         <div>
           <h2 className='text-2xl font-bold tracking-tight'>
-            {isNew ? '新規チャットボット作成' : 'チャットボット設定'}
+            チャットボット作成
           </h2>
         </div>
         <Separator />
@@ -343,9 +331,9 @@ export function BotSettings() {
               name='name'
               render={({ field }) => (
                 <FormItem>
-                  <span className='block font-bold'>チャットボット名</span>
+                  <span className='block font-bold'>BOT名</span>
                   <FormControl>
-                    <Input placeholder='チャットボット名を入力' {...field} />
+                    <Input placeholder='BOT名を入力' {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -372,61 +360,38 @@ export function BotSettings() {
             {!isNew && (
               <>
                 <div className='space-y-2'>
-                  <FormField
-                    control={form.control}
-                    name='enableInitialGreeting'
-                    render={({ field }) => (
-                      <FormItem className='flex w-full flex-row items-center justify-between space-y-0 space-x-3'>
-                        <div className='flex items-center gap-2'>
-                          <span className='font-bold'>AIの初期挨拶</span>
-                          <TooltipProvider delayDuration={0}>
-                            <Tooltip>
-                              <TooltipTrigger asChild>
-                                <Info className='text-muted-foreground h-4 w-4 cursor-help' />
-                              </TooltipTrigger>
-                              <TooltipContent className='max-w-xs'>
-                                <div className='space-y-1 text-xs'>
-                                  <p>
-                                    この機能を有効にすると、チャットボットが最初にユーザーに送信する挨拶メッセージを設定できます。
-                                  </p>
-                                  <p>
-                                    初期挨拶は、ユーザーがチャットを開始した際に自動的に表示され、BOTの第一印象を形成します。
-                                  </p>
-                                </div>
-                              </TooltipContent>
-                            </Tooltip>
-                          </TooltipProvider>
-                        </div>
-                        <div className='flex items-center gap-2'>
-                          <Button
-                            type='button'
-                            variant='outline'
-                            size='sm'
-                            onClick={handleResetGreeting}
-                            disabled={!enableInitialGreeting}
-                            className='h-8'
-                          >
-                            <RotateCcw className='mr-2 h-4 w-4' />
-                            初期挨拶をリセット
-                          </Button>
-                          <FormControl>
-                            <Checkbox
-                              id={field.name}
-                              checked={field.value}
-                              onCheckedChange={field.onChange}
-                              className='border-foreground/20 data-[state=checked]:border-primary border-2'
-                            />
-                          </FormControl>
-                          <label
-                            htmlFor={field.name}
-                            className='text-muted-foreground cursor-pointer text-sm'
-                          >
-                            有効にする
-                          </label>
-                        </div>
-                      </FormItem>
-                    )}
-                  />
+                  <div className='flex items-center justify-between'>
+                    <div className='flex items-center gap-2'>
+                      <span className='font-bold'>AIの初期挨拶</span>
+                      <TooltipProvider delayDuration={0}>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <Info className='text-muted-foreground h-4 w-4 cursor-help' />
+                          </TooltipTrigger>
+                          <TooltipContent className='max-w-xs'>
+                            <div className='space-y-1 text-xs'>
+                              <p>
+                                この機能を有効にすると、チャットボットが最初にユーザーに送信する挨拶メッセージを設定できます。
+                              </p>
+                              <p>
+                                初期挨拶は、ユーザーがチャットを開始した際に自動的に表示され、BOTの第一印象を形成します。
+                              </p>
+                            </div>
+                          </TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
+                    </div>
+                    <Button
+                      type='button'
+                      variant='outline'
+                      size='sm'
+                      onClick={handleResetGreeting}
+                      className='h-8'
+                    >
+                      <RotateCcw className='mr-2 h-4 w-4' />
+                      初期挨拶をリセット
+                    </Button>
+                  </div>
                   <FormField
                     control={form.control}
                     name='initialGreeting'
@@ -436,7 +401,6 @@ export function BotSettings() {
                           <Textarea
                             placeholder='AIの初期挨拶を入力'
                             className='r min-h-24 disabled:bg-gray-100 disabled:opacity-100 dark:disabled:bg-gray-800'
-                            disabled={!enableInitialGreeting}
                             {...field}
                           />
                         </FormControl>

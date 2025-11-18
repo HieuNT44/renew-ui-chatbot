@@ -42,7 +42,7 @@ function DeleteButton({ document }: { document: Document }) {
   const handleDelete = () => {
     // TODO: Implement actual delete API call
     setOpen(false)
-    toast.success('ドキュメントが削除されました')
+    toast.success('学習データが削除されました')
   }
 
   return (
@@ -54,7 +54,7 @@ function DeleteButton({ document }: { document: Document }) {
         open={open}
         onOpenChange={setOpen}
         title='削除の確認'
-        desc={`このドキュメント「${document.name}」を削除してもよろしいですか？この操作は元に戻せません。`}
+        desc={`この学習データ「${document.name}」を削除してもよろしいですか？この操作は元に戻せません。`}
         confirmText='削除'
         cancelBtnText='キャンセル'
         destructive
@@ -86,7 +86,7 @@ export const documentsColumns: ColumnDef<Document>[] = [
   {
     accessorKey: 'name',
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title='ドキュメント名' />
+      <DataTableColumnHeader column={column} title='学習データ名' />
     ),
     cell: ({ row }) => (
       <LongText className='w-full font-medium'>{row.getValue('name')}</LongText>

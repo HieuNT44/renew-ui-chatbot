@@ -8,17 +8,17 @@ type ContentSectionProps = {
 }
 
 export function ContentSection({
-  title,
   desc,
   children,
   className,
 }: ContentSectionProps) {
   return (
-    <div className={cn('space-y-6', className)}>
-      <div>
-        <h2 className='text-xl font-bold tracking-tight'>{title}</h2>
-        {desc && <p className='text-muted-foreground mt-0.5 text-xs'>{desc}</p>}
-      </div>
+    <div className={cn('mt-2 space-y-3', className)}>
+      {desc && (
+        <div className='flex items-center'>
+          <p className='text-muted-foreground text-xs'>※{desc}</p>
+        </div>
+      )}
       {children}
     </div>
   )
