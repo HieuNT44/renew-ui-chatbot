@@ -1,20 +1,11 @@
 import { useRef } from 'react'
 import { format } from 'date-fns'
-import {
-  Bot as BotIcon,
-  Calendar,
-  CloudUpload,
-  Eye,
-  FileText,
-  Globe,
-  Pencil,
-  User,
-} from 'lucide-react'
+import { Bot as BotIcon, Calendar, Eye, Pencil, User } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardFooter, CardHeader } from '@/components/ui/card'
-import { type Bot, type DocumentType } from '../data/bots'
+import { type Bot } from '../data/bots'
 
 type BotCardProps = {
   bot: Bot
@@ -52,34 +43,6 @@ export function BotCard({ bot, onPreview, onEdit }: BotCardProps) {
       {bot.name}
     </h3>
   )
-
-  const _typeConfig: Record<
-    DocumentType,
-    {
-      label: string
-      Icon: React.ComponentType<{ className?: string }>
-      className: string
-    }
-  > = {
-    file: {
-      label: 'ファイル',
-      Icon: CloudUpload,
-      className:
-        'border-teal-500 text-teal-700 bg-teal-50 hover:bg-teal-100 dark:border-teal-400 dark:text-teal-300 dark:bg-teal-950/30',
-    },
-    url: {
-      label: 'ウェブサイト',
-      Icon: Globe,
-      className:
-        'border-blue-500 text-blue-700 bg-blue-50 hover:bg-blue-100 dark:border-blue-400 dark:text-blue-300 dark:bg-blue-950/30',
-    },
-    text: {
-      label: 'テキスト',
-      Icon: FileText,
-      className:
-        'border-slate-500 text-slate-700 bg-slate-50 hover:bg-slate-100 dark:border-slate-400 dark:text-slate-300 dark:bg-slate-950/30',
-    },
-  }
 
   return (
     <Card className='relative flex h-full flex-col gap-0 pt-8 transition-shadow hover:shadow-md'>

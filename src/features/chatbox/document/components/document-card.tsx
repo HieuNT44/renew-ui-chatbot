@@ -80,7 +80,7 @@ export function DocumentCard({ document, onEdit }: DocumentCardProps) {
       cancelAnimationFrame(rafId)
       window.removeEventListener('resize', handleResize)
     }
-  }, [document.name, document.documentTypes])
+  }, [document.name, document.documentType])
 
   const titleElement = (
     <h3
@@ -142,9 +142,7 @@ export function DocumentCard({ document, onEdit }: DocumentCardProps) {
                 <Tooltip>
                   <TooltipTrigger asChild>{descriptionElement}</TooltipTrigger>
                   <TooltipContent className='max-w-sm text-[12px]'>
-                    <p className='text-sm'>
-                      {document.documentTypes.join(', ')}
-                    </p>
+                    <p className='text-sm'>{document.documentType}</p>
                   </TooltipContent>
                 </Tooltip>
               </TooltipProvider>
