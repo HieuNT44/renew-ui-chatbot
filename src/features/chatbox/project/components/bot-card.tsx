@@ -53,7 +53,7 @@ export function BotCard({ bot, onPreview, onEdit }: BotCardProps) {
     </h3>
   )
 
-  const typeConfig: Record<
+  const _typeConfig: Record<
     DocumentType,
     {
       label: string
@@ -99,7 +99,7 @@ export function BotCard({ bot, onPreview, onEdit }: BotCardProps) {
           >
             {status.label}
           </Badge>
-          <div className='flex items-center gap-1.5 text-xs'>
+          {/* <div className='flex items-center gap-1.5 text-xs'>
             {bot.documentTypes.map((type) => {
               const { Icon } = typeConfig[type]
               return (
@@ -116,7 +116,7 @@ export function BotCard({ bot, onPreview, onEdit }: BotCardProps) {
                 </Badge>
               )
             })}
-          </div>
+          </div> */}
           <div className='flex flex-wrap items-center gap-4 text-sm'>
             <div className='flex items-center gap-1.5'>
               <Calendar className='text-muted-foreground size-4 shrink-0' />

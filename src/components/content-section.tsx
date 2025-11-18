@@ -16,8 +16,8 @@ export function ContentSection({
   return (
     <div className={cn('space-y-6', className)}>
       <div>
-        <h2 className='text-2xl font-bold tracking-tight'>{title}</h2>
-        {desc && <p className='text-muted-foreground mt-1 text-sm'>{desc}</p>}
+        <h2 className='text-xl font-bold tracking-tight'>{title}</h2>
+        {desc && <p className='text-muted-foreground mt-0.5 text-xs'>{desc}</p>}
       </div>
       {children}
     </div>

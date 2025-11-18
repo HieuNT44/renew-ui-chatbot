@@ -8,7 +8,7 @@ export type Document = {
   status: TrainingStatus
   lastTrainingDate: Date
   lastUpdatedBy: string
-  documentTypes: DocumentType[]
+  documentType: DocumentType
   totalCharacterCount: number
 }
 
@@ -19,7 +19,7 @@ export const documents: Document[] = [
     status: 'completed',
     lastTrainingDate: new Date('2024-01-15T10:30:00'),
     lastUpdatedBy: '田中太郎',
-    documentTypes: ['file', 'url'],
+    documentType: 'file',
     totalCharacterCount: 17798,
   },
   {
@@ -28,7 +28,7 @@ export const documents: Document[] = [
     status: 'processing',
     lastTrainingDate: new Date('2024-01-14T14:20:00'),
     lastUpdatedBy: '佐藤花子',
-    documentTypes: ['text'],
+    documentType: 'text',
     totalCharacterCount: 12345,
   },
   {
@@ -37,7 +37,7 @@ export const documents: Document[] = [
     status: 'error',
     lastTrainingDate: new Date('2024-01-13T09:15:00'),
     lastUpdatedBy: '鈴木一郎',
-    documentTypes: ['file', 'text'],
+    documentType: 'file',
     totalCharacterCount: 9876,
   },
   {
@@ -46,7 +46,7 @@ export const documents: Document[] = [
     status: 'completed',
     lastTrainingDate: new Date('2024-01-12T16:45:00'),
     lastUpdatedBy: '山田美咲',
-    documentTypes: ['url', 'text'],
+    documentType: 'url',
     totalCharacterCount: 23456,
   },
   {
@@ -55,7 +55,7 @@ export const documents: Document[] = [
     status: 'completed',
     lastTrainingDate: new Date('2024-01-11T11:20:00'),
     lastUpdatedBy: '高橋健太',
-    documentTypes: ['file', 'url', 'text'],
+    documentType: 'text',
     totalCharacterCount: 34567,
   },
   {
@@ -64,7 +64,7 @@ export const documents: Document[] = [
     status: 'processing',
     lastTrainingDate: new Date('2024-01-10T13:30:00'),
     lastUpdatedBy: '伊藤さくら',
-    documentTypes: ['file'],
+    documentType: 'file',
     totalCharacterCount: 15678,
   },
 ]

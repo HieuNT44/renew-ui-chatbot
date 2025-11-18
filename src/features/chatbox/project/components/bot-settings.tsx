@@ -4,7 +4,15 @@ import { useForm, useWatch } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useLocation, useNavigate } from '@tanstack/react-router'
 import { Route as UpdateRoute } from '@/routes/_authenticated/chatbox/project/update/$id'
-import { Check, ChevronsUpDown, Copy, Info, Trash2, X } from 'lucide-react'
+import {
+  Check,
+  ChevronsUpDown,
+  Copy,
+  Info,
+  RotateCcw,
+  Trash2,
+  X,
+} from 'lucide-react'
 import { toast } from 'sonner'
 import { cn } from '@/lib/utils'
 import { Badge } from '@/components/ui/badge'
@@ -249,6 +257,14 @@ export function BotSettings() {
     }
   }
 
+  const defaultInitialGreeting =
+    'こんにちは！お問い合わせありがとうございます。どのようにお手伝いできますか？'
+
+  const handleResetGreeting = () => {
+    form.setValue('initialGreeting', defaultInitialGreeting)
+    toast.success('初期挨拶をリセットしました')
+  }
+
   const enableInitialGreeting = useWatch({
     control: form.control,
     name: 'enableInitialGreeting',
@@ -353,106 +369,121 @@ export function BotSettings() {
               )}
             />
 
-            <div className='space-y-2'>
-              <FormField
-                control={form.control}
-                name='enableInitialGreeting'
-                render={({ field }) => (
-                  <FormItem className='flex w-full flex-row items-center justify-between space-y-0 space-x-3'>
-                    <div className='flex items-center gap-2'>
-                      <span className='font-bold'>AIの初期挨拶</span>
-                      <TooltipProvider delayDuration={0}>
-                        <Tooltip>
-                          <TooltipTrigger asChild>
-                            <Info className='text-muted-foreground h-4 w-4 cursor-help' />
-                          </TooltipTrigger>
-                          <TooltipContent className='max-w-xs'>
-                            <div className='space-y-1 text-xs'>
-                              <p>
-                                この機能を有効にすると、チャットボットが最初にユーザーに送信する挨拶メッセージを設定できます。
-                              </p>
-                              <p>
-                                初期挨拶は、ユーザーがチャットを開始した際に自動的に表示され、BOTの第一印象を形成します。
-                              </p>
-                            </div>
-                          </TooltipContent>
-                        </Tooltip>
-                      </TooltipProvider>
-                    </div>
-                    <div className='flex items-center gap-2'>
-                      <FormControl>
-                        <Checkbox
-                          id={field.name}
-                          checked={field.value}
-                          onCheckedChange={field.onChange}
-                          className='border-foreground/20 data-[state=checked]:border-primary border-2'
-                        />
-                      </FormControl>
-                      <label
-                        htmlFor={field.name}
-                        className='text-muted-foreground cursor-pointer text-sm'
-                      >
-                        有効にする
-                      </label>
-                    </div>
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name='initialGreeting'
-                render={({ field }) => (
-                  <FormItem>
-                    <FormControl>
-                      <Textarea
-                        placeholder='AIの初期挨拶を入力'
-                        className='r min-h-24 disabled:bg-gray-100 disabled:opacity-100 dark:disabled:bg-gray-800'
-                        disabled={!enableInitialGreeting}
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </div>
+            {!isNew && (
+              <>
+                <div className='space-y-2'>
+                  <FormField
+                    control={form.control}
+                    name='enableInitialGreeting'
+                    render={({ field }) => (
+                      <FormItem className='flex w-full flex-row items-center justify-between space-y-0 space-x-3'>
+                        <div className='flex items-center gap-2'>
+                          <span className='font-bold'>AIの初期挨拶</span>
+                          <TooltipProvider delayDuration={0}>
+                            <Tooltip>
+                              <TooltipTrigger asChild>
+                                <Info className='text-muted-foreground h-4 w-4 cursor-help' />
+                              </TooltipTrigger>
+                              <TooltipContent className='max-w-xs'>
+                                <div className='space-y-1 text-xs'>
+                                  <p>
+                                    この機能を有効にすると、チャットボットが最初にユーザーに送信する挨拶メッセージを設定できます。
+                                  </p>
+                                  <p>
+                                    初期挨拶は、ユーザーがチャットを開始した際に自動的に表示され、BOTの第一印象を形成します。
+                                  </p>
+                                </div>
+                              </TooltipContent>
+                            </Tooltip>
+                          </TooltipProvider>
+                        </div>
+                        <div className='flex items-center gap-2'>
+                          <Button
+                            type='button'
+                            variant='outline'
+                            size='sm'
+                            onClick={handleResetGreeting}
+                            disabled={!enableInitialGreeting}
+                            className='h-8'
+                          >
+                            <RotateCcw className='mr-2 h-4 w-4' />
+                            初期挨拶をリセット
+                          </Button>
+                          <FormControl>
+                            <Checkbox
+                              id={field.name}
+                              checked={field.value}
+                              onCheckedChange={field.onChange}
+                              className='border-foreground/20 data-[state=checked]:border-primary border-2'
+                            />
+                          </FormControl>
+                          <label
+                            htmlFor={field.name}
+                            className='text-muted-foreground cursor-pointer text-sm'
+                          >
+                            有効にする
+                          </label>
+                        </div>
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name='initialGreeting'
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormControl>
+                          <Textarea
+                            placeholder='AIの初期挨拶を入力'
+                            className='r min-h-24 disabled:bg-gray-100 disabled:opacity-100 dark:disabled:bg-gray-800'
+                            disabled={!enableInitialGreeting}
+                            {...field}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
 
-            <FormField
-              control={form.control}
-              name='embedScript'
-              render={({ field }) => (
-                <FormItem>
-                  <div className='flex items-center justify-between'>
-                    <div className='flex flex-col'>
-                      <span className='font-bold'>埋め込みスクリプト</span>
-                      <span className='text-muted-foreground mt-1 text-xs'>
-                        ウェブサイトの右下にチャットバブルを追加するには、このスクリプトタグをHTMLに追加します。
-                      </span>
-                    </div>
-                    <Button
-                      type='button'
-                      variant='outline'
-                      size='sm'
-                      onClick={handleCopyScript}
-                      className='h-8'
-                    >
-                      <Copy className='mr-2 h-4 w-4' />
-                      コピー
-                    </Button>
-                  </div>
-                  <FormControl>
-                    <div className='border-muted-foreground/20 bg-muted/50 dark:bg-muted/30 relative rounded-md border p-4'>
-                      <pre className='h-[200px] overflow-y-auto font-mono text-xs whitespace-pre-wrap'>
-                        <code className='h-full overflow-y-auto'>
-                          {field.value}
-                        </code>
-                      </pre>
-                    </div>
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+                <FormField
+                  control={form.control}
+                  name='embedScript'
+                  render={({ field }) => (
+                    <FormItem>
+                      <div className='flex items-center justify-between'>
+                        <div className='flex flex-col'>
+                          <span className='font-bold'>埋め込みスクリプト</span>
+                          <span className='text-muted-foreground mt-1 text-xs'>
+                            ウェブサイトの右下にチャットバブルを追加するには、このスクリプトタグをHTMLに追加します。
+                          </span>
+                        </div>
+                        <Button
+                          type='button'
+                          variant='outline'
+                          size='sm'
+                          onClick={handleCopyScript}
+                          className='h-8'
+                        >
+                          <Copy className='mr-2 h-4 w-4' />
+                          コピー
+                        </Button>
+                      </div>
+                      <FormControl>
+                        <div className='border-muted-foreground/20 bg-muted/50 dark:bg-muted/30 relative rounded-md border p-4'>
+                          <pre className='h-[200px] overflow-y-auto font-mono text-xs whitespace-pre-wrap'>
+                            <code className='h-full overflow-y-auto'>
+                              {field.value}
+                            </code>
+                          </pre>
+                        </div>
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </>
+            )}
 
             <div className='flex items-center justify-end gap-4 pt-4'>
               <Button

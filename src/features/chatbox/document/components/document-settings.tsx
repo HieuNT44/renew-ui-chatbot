@@ -32,14 +32,6 @@ import {
   FormMessage,
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
-import { ScrollArea } from '@/components/ui/scroll-area'
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select'
 import { Separator } from '@/components/ui/separator'
 import { Switch } from '@/components/ui/switch'
 import { Textarea } from '@/components/ui/textarea'
@@ -202,7 +194,7 @@ export function DocumentSettings() {
     }
 
     // Sample data based on document types
-    if (document.documentTypes.includes('url')) {
+    if (document.documentType.includes('url')) {
       return {
         name: document.name,
         website: 'https://example.com',
@@ -210,7 +202,7 @@ export function DocumentSettings() {
       }
     }
 
-    if (document.documentTypes.includes('text')) {
+    if (document.documentType.includes('text')) {
       return {
         name: document.name,
         website: '',
@@ -300,7 +292,7 @@ export function DocumentSettings() {
     }
 
     // Initialize crawled pages if document has url type
-    if (document?.documentTypes.includes('url') && sampleData.website) {
+    if (document?.documentType.includes('url') && sampleData.website) {
       const mockCrawledPage: CrawledPage = {
         id: '1',
         url: sampleData.website,
@@ -510,14 +502,11 @@ export function DocumentSettings() {
 
   const handleFileSelect = (files: FileList | null) => {
     if (!files) return
-    const newFiles = Array.from(files).filter(
-      (file) =>
-        file.type === 'application/pdf' ||
-        file.name.endsWith('.pdf') ||
-        file.type ===
-          'application/vnd.openxmlformats-officedocument.wordprocessingml.document' ||
-        file.name.endsWith('.docx')
-    )
+    const allowedExtensions = ['.pdf', '.docx', '.txt']
+    const newFiles = Array.from(files).filter((file) => {
+      const fileName = file.name.toLowerCase()
+      return allowedExtensions.some((ext) => fileName.endsWith(ext))
+    })
     setUploadedFiles((prev) => [...prev, ...newFiles])
     form.setValue('files', [...uploadedFiles, ...newFiles])
   }
@@ -705,49 +694,46 @@ export function DocumentSettings() {
       </Header>
 
       <Main fixed>
-        <div className='space-y-0.5'>
+        <div className=''>
           <h1 className='text-lg font-bold tracking-tight md:text-xl'>
             {isNew ? 'データ新規作成' : 'データ編集'}
           </h1>
         </div>
-        <Separator className='my-2 lg:my-4' />
-        <div className='flex flex-1 flex-col space-y-2 overflow-y-auto pr-2 md:space-y-2 lg:flex-row lg:space-y-0 lg:space-x-12'>
-          <aside className='top-0 flex items-start lg:sticky lg:w-1/5'>
-            <div className='mb-4 p-1 md:hidden'>
-              <Select value={activeTab} onValueChange={handleTabChange}>
-                <SelectTrigger className='h-12 w-48'>
-                  <div className='flex items-center gap-2'>
-                    <span className='scale-125'>
-                      {
-                        sidebarNavItems.find((item) => item.value === activeTab)
-                          ?.icon
-                      }
+        <Separator className='my-2 lg:my-3' />
+        <Form {...form}>
+          <form
+            onSubmit={handleSubmit}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' && e.target instanceof HTMLInputElement) {
+                e.preventDefault()
+              }
+            }}
+            className='flex min-h-0 w-full flex-1 flex-col'
+          >
+            <div className='mb-6 space-y-4'>
+              <FormField
+                control={form.control}
+                name='name'
+                render={({ field }) => (
+                  <FormItem>
+                    <span className='mb-2 block text-sm font-bold'>
+                      ドキュメント名
+                      <span className='text-destructive ml-1'>*</span>
                     </span>
-                    <SelectValue>
-                      {sidebarNavItems.find((item) => item.value === activeTab)
-                        ?.title || 'タブを選択'}
-                    </SelectValue>
-                  </div>
-                </SelectTrigger>
-                <SelectContent>
-                  {sidebarNavItems.map((item) => (
-                    <SelectItem key={item.value} value={item.value}>
-                      <div className='flex items-center gap-x-4 px-2 py-1'>
-                        <span className='scale-125'>{item.icon}</span>
-                        <span className='text-md'>{item.title}</span>
-                      </div>
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+                    <FormControl>
+                      <Input
+                        placeholder='ドキュメント名を入力'
+                        {...field}
+                        className='w-full sm:w-full md:w-1/2'
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
             </div>
-
-            <ScrollArea
-              orientation='horizontal'
-              type='always'
-              className='bg-background hidden w-full min-w-40 px-1 py-2 md:flex'
-            >
-              <nav className='flex space-x-2 py-1 lg:flex-col lg:space-y-1 lg:space-x-0'>
+            <div className='flex min-h-0 flex-1 flex-col space-y-1 pr-2'>
+              <div className='flex shrink-0 items-center border-b'>
                 {sidebarNavItems.map((item) => (
                   <Button
                     key={item.value}
@@ -755,572 +741,545 @@ export function DocumentSettings() {
                     variant='ghost'
                     onClick={() => handleTabChange(item.value)}
                     className={cn(
-                      'w-50 justify-start',
+                      'rounded-none border-b-2 border-transparent px-4 py-2',
                       activeTab === item.value
-                        ? 'bg-muted hover:bg-accent'
-                        : 'hover:bg-accent hover:underline'
+                        ? 'border-primary bg-muted text-primary'
+                        : 'hover:bg-muted/50'
                     )}
                   >
-                    <span className='me-2'>{item.icon}</span>
+                    <span className='mr-2'>{item.icon}</span>
                     <span className='text-sm font-bold'>{item.title}</span>
                   </Button>
                 ))}
-              </nav>
-            </ScrollArea>
-          </aside>
-          <div className='flex w-full overflow-y-auto p-1 pr-4'>
-            <ContentSection
-              title={activeTabItem?.contentTitle || ''}
-              desc={activeTabItem?.contentDesc || ''}
-              className='w-[90%] pb-2'
-            >
-              <Form {...form}>
-                <form
-                  onSubmit={handleSubmit}
-                  onKeyDown={(e) => {
-                    if (
-                      e.key === 'Enter' &&
-                      e.target instanceof HTMLInputElement
-                    ) {
-                      e.preventDefault()
-                    }
-                  }}
-                  className='w-full space-y-6'
+              </div>
+              <div className='min-h-0 flex-1 overflow-y-auto px-4 py-2'>
+                <ContentSection
+                  title={activeTabItem?.contentTitle || ''}
+                  desc={activeTabItem?.contentDesc || ''}
+                  className='w-full pb-2'
                 >
-                  <FormField
-                    control={form.control}
-                    name='name'
-                    render={({ field }) => (
-                      <FormItem>
-                        <span className='mb-2 block text-sm font-bold'>
-                          ドキュメント名
-                          <span className='text-destructive ml-1'>*</span>
-                        </span>
-                        <FormControl>
-                          <Input
-                            placeholder='ドキュメント名を入力'
-                            {...field}
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  {activeTab === 'file' && (
-                    <FormField
-                      control={form.control}
-                      name='files'
-                      render={() => (
-                        <FormItem>
-                          <div className='mb-2 flex items-center justify-between'>
-                            <div className='flex items-center gap-2'>
-                              <span className='block text-sm font-bold'>
-                                ファイルアップロード
-                                <span className='text-destructive ml-1'>*</span>
-                              </span>
-                              <Tooltip>
-                                <TooltipTrigger asChild>
-                                  <Info className='text-muted-foreground h-4 w-4 cursor-help' />
-                                </TooltipTrigger>
-                                <TooltipContent className='max-w-xs'>
-                                  <div className='space-y-1 text-xs'>
-                                    <p>
-                                      ファイルをアップロードして、BOTの知識ベースを構築します。
-                                    </p>
-                                    <p>
-                                      アップロードされた文書の内容は解析され、BOTが質問に答える際の参考データとして使用されます。
-                                    </p>
-                                    <p className='font-medium'>
-                                      対応形式: PDF, DOCX, TXT
-                                    </p>
-                                  </div>
-                                </TooltipContent>
-                              </Tooltip>
-                            </div>
-                          </div>
-                          <FormControl>
-                            <div className='space-y-4'>
-                              <div
-                                onDrop={handleDrop}
-                                onDragOver={handleDragOver}
-                                onDragLeave={handleDragLeave}
-                                className={cn(
-                                  'cursor-pointer rounded-lg border-2 border-dashed p-8 text-center transition-colors',
-                                  isDragging
-                                    ? 'border-blue-500 bg-blue-50 dark:bg-blue-950/20'
-                                    : 'border-blue-300 hover:border-blue-400'
-                                )}
-                                onClick={() => {
-                                  const input = window.document.getElementById(
-                                    'file-input'
-                                  ) as HTMLInputElement
-                                  input?.click()
-                                }}
-                              >
-                                <input
-                                  id='file-input'
-                                  type='file'
-                                  accept='.pdf,.docx'
-                                  multiple
-                                  onChange={handleFileInputChange}
-                                  className='hidden'
-                                />
-                                <CloudUpload className='mx-auto mb-4 h-12 w-12' />
-                                <p className='mb-2 text-sm font-medium'>
-                                  ファイルをここにドラッグアンドドロップするか、クリックしてファイルを選択してください
-                                </p>
-                                <p className='text-muted-foreground text-xs'>
-                                  サポートされているファイル形式: .PDF、.DOCX
-                                </p>
+                  <div className='w-full space-y-6'>
+                    {activeTab === 'file' && (
+                      <FormField
+                        control={form.control}
+                        name='files'
+                        render={() => (
+                          <FormItem>
+                            <div className='mb-2 flex items-center justify-between'>
+                              <div className='flex items-center gap-2'>
+                                <span className='block text-sm font-bold'>
+                                  ファイルアップロード
+                                  <span className='text-destructive ml-1'>
+                                    *
+                                  </span>
+                                </span>
+                                <Tooltip>
+                                  <TooltipTrigger asChild>
+                                    <Info className='text-muted-foreground h-4 w-4 cursor-help' />
+                                  </TooltipTrigger>
+                                  <TooltipContent className='max-w-xs'>
+                                    <div className='space-y-1 text-xs'>
+                                      <p>
+                                        ファイルをアップロードして、BOTの知識ベースを構築します。
+                                      </p>
+                                      <p>
+                                        アップロードされた文書の内容は解析され、BOTが質問に答える際の参考データとして使用されます。
+                                      </p>
+                                      <p className='font-medium'>
+                                        対応形式: PDF, DOCX, TXT
+                                      </p>
+                                    </div>
+                                  </TooltipContent>
+                                </Tooltip>
                               </div>
+                            </div>
+                            <FormControl>
+                              <div className='space-y-4'>
+                                <div
+                                  onDrop={handleDrop}
+                                  onDragOver={handleDragOver}
+                                  onDragLeave={handleDragLeave}
+                                  className={cn(
+                                    'cursor-pointer rounded-lg border-2 border-dashed p-8 text-center transition-colors',
+                                    isDragging
+                                      ? 'border-blue-500 bg-blue-50 dark:bg-blue-950/20'
+                                      : 'border-blue-300 hover:border-blue-400'
+                                  )}
+                                  onClick={() => {
+                                    const input =
+                                      window.document.getElementById(
+                                        'file-input'
+                                      ) as HTMLInputElement
+                                    input?.click()
+                                  }}
+                                >
+                                  <input
+                                    id='file-input'
+                                    type='file'
+                                    accept='.pdf,.docx,.txt'
+                                    multiple
+                                    onChange={handleFileInputChange}
+                                    className='hidden'
+                                  />
+                                  <CloudUpload className='mx-auto mb-4 h-12 w-12' />
+                                  <p className='mb-2 text-sm font-medium'>
+                                    ファイルをここにドラッグアンドドロップするか、クリックしてファイルを選択してください
+                                  </p>
+                                  <p className='text-muted-foreground text-xs'>
+                                    サポートされているファイル形式:
+                                    .PDF、.DOCX、.TXT
+                                  </p>
+                                </div>
 
-                              {uploadedFiles.length > 0 && (
-                                <div className='space-y-2'>
-                                  {uploadedFiles.map((file, index) => (
-                                    <FileItem
+                                {uploadedFiles.length > 0 && (
+                                  <div className='space-y-2'>
+                                    {uploadedFiles.map((file, index) => (
+                                      <FileItem
+                                        key={index}
+                                        file={file}
+                                        onRemove={() => handleRemoveFile(index)}
+                                      />
+                                    ))}
+                                  </div>
+                                )}
+                                <div className='flex items-center justify-end'>
+                                  {uploadedFiles.length > 0 && (
+                                    <div className='flex items-center gap-2 text-sm'>
+                                      <span className='font-medium'>
+                                        ファイル数: {uploadedFiles.length}
+                                      </span>
+                                      <span className='text-muted-foreground'>
+                                        |
+                                      </span>
+                                      <span className='text-muted-foreground text-xs'>
+                                        検出された文字数:{' '}
+                                        {uploadedFiles
+                                          .reduce((sum, file) => {
+                                            const estimated = Math.floor(
+                                              file.size / 2
+                                            )
+                                            return sum + estimated
+                                          }, 0)
+                                          .toLocaleString()}
+                                      </span>
+                                    </div>
+                                  )}
+                                </div>
+                              </div>
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    )}
+
+                    {activeTab === 'website' && (
+                      <FormField
+                        control={form.control}
+                        name='website'
+                        render={({ field }) => (
+                          <FormItem>
+                            <div className='mb-2 flex flex-col gap-1'>
+                              <div className='flex items-center justify-between gap-2'>
+                                <span className='block text-sm font-bold'>
+                                  ウェブサイト
+                                </span>
+                              </div>
+                              <span className='text-muted-foreground text-xs'>
+                                複数のURLを連続して追加できます。クロールは自動的にバックグラウンドで実行されます。（デモモード:
+                                サンプルデータを生成します）
+                              </span>
+                            </div>
+                            <FormControl>
+                              <div className='flex items-center gap-2'>
+                                <Input
+                                  placeholder='https://example.com'
+                                  className='flex-1 rounded-md'
+                                  {...field}
+                                />
+                                <Button
+                                  type='button'
+                                  className='rounded-md bg-blue-600 text-white hover:bg-blue-700'
+                                  disabled={
+                                    !field.value ||
+                                    field.value.trim() === '' ||
+                                    isFetchingLink ||
+                                    crawledPages.some(
+                                      (page) =>
+                                        field.value &&
+                                        page.url === field.value.trim()
+                                    )
+                                  }
+                                  onClick={async () => {
+                                    if (field.value) {
+                                      await handleDetectLinks(field.value)
+                                    }
+                                  }}
+                                >
+                                  {isFetchingLink ? (
+                                    <>
+                                      <Loader2 className='h-4 w-4 animate-spin' />
+                                      取得中...
+                                    </>
+                                  ) : (
+                                    'リンクから取得'
+                                  )}
+                                </Button>
+                              </div>
+                            </FormControl>
+                            <FormMessage />
+
+                            {/* Detected Links Section */}
+                            {detectedLinks.length > 0 && (
+                              <div className='mt-4 space-y-2 rounded-lg border p-4'>
+                                <div className='flex items-center gap-2'>
+                                  <LinkIcon className='text-muted-foreground h-4 w-4' />
+                                  <span className='text-sm font-bold'>
+                                    検出されたリンク（クリックして追加）
+                                  </span>
+                                </div>
+                                <div className='flex flex-wrap gap-2'>
+                                  {detectedLinks.map((link, index) => (
+                                    <Button
                                       key={index}
-                                      file={file}
-                                      onRemove={() => handleRemoveFile(index)}
-                                    />
+                                      type='button'
+                                      variant='outline'
+                                      onClick={() => handleCrawlLink(link.url)}
+                                      className='h-auto rounded-full border-blue-200 bg-blue-50 px-3 py-1 text-xs text-blue-700 hover:bg-blue-100 hover:text-blue-800'
+                                    >
+                                      {link.url}
+                                    </Button>
                                   ))}
                                 </div>
-                              )}
-                              <div className='flex items-center justify-end'>
-                                {uploadedFiles.length > 0 && (
-                                  <div className='flex items-center gap-2 text-sm'>
-                                    <span className='font-medium'>
-                                      ファイル数: {uploadedFiles.length}
-                                    </span>
-                                    <span className='text-muted-foreground'>
-                                      |
-                                    </span>
-                                    <span className='text-muted-foreground text-xs'>
-                                      検出された文字数:{' '}
-                                      {uploadedFiles
-                                        .reduce((sum, file) => {
-                                          const estimated = Math.floor(
-                                            file.size / 2
-                                          )
-                                          return sum + estimated
-                                        }, 0)
+                              </div>
+                            )}
+
+                            {/* Crawled Pages Section */}
+                            {crawledPages.length > 0 && (
+                              <div className='mt-4 space-y-4'>
+                                <div className='mb-2'>
+                                  <span className='text-sm font-bold'>
+                                    クロールされたページ
+                                  </span>
+                                </div>
+                                {crawledPages.map((page) => (
+                                  <Collapsible
+                                    key={page.id}
+                                    open={openCrawledPages.has(page.id)}
+                                    onOpenChange={() =>
+                                      toggleCrawledPageCollapsible(page.id)
+                                    }
+                                  >
+                                    <div className='rounded-lg border'>
+                                      <CollapsibleTrigger className='bg-muted/50 hover:bg-muted/50 flex w-full items-center justify-between p-4'>
+                                        <div className='flex items-center gap-2'>
+                                          <ChevronDown
+                                            className={cn(
+                                              'h-4 w-4 transition-transform',
+                                              openCrawledPages.has(page.id) &&
+                                                'rotate-180'
+                                            )}
+                                          />
+                                          <span className='text-sm font-medium'>
+                                            {page.url}
+                                          </span>
+                                        </div>
+                                        <div className='flex items-center gap-2'>
+                                          {!page.isCompleted ? (
+                                            <div className='bg-primary/10 flex items-center gap-1 rounded-full px-2 py-1'>
+                                              <Loader2 className='text-primary h-3 w-3 animate-spin' />
+                                              <span className='text-primary text-xs font-medium'>
+                                                クロール中...
+                                              </span>
+                                            </div>
+                                          ) : (
+                                            <div className='flex items-center gap-1 rounded-full bg-green-100 px-2 py-1 dark:bg-green-900/30'>
+                                              <Check className='h-3 w-3 text-green-700 dark:text-green-400' />
+                                              <span className='text-xs font-medium text-green-700 dark:text-green-400'>
+                                                完了 (
+                                                {page.characterCount.toLocaleString()}
+                                                文字)
+                                              </span>
+                                            </div>
+                                          )}
+                                          <Tooltip>
+                                            <TooltipTrigger asChild>
+                                              <div
+                                                onClick={(e) =>
+                                                  e.stopPropagation()
+                                                }
+                                              >
+                                                <Switch
+                                                  checked={page.isEnabled}
+                                                  onCheckedChange={() =>
+                                                    handleToggleCrawledPage(
+                                                      page.id
+                                                    )
+                                                  }
+                                                  disabled={!page.isCompleted}
+                                                />
+                                              </div>
+                                            </TooltipTrigger>
+                                            <TooltipContent>
+                                              <p className='text-xs'>
+                                                {!page.isCompleted
+                                                  ? 'クロール中...'
+                                                  : page.isEnabled
+                                                    ? 'このページを無効にする'
+                                                    : 'このページを有効にする'}
+                                              </p>
+                                            </TooltipContent>
+                                          </Tooltip>
+                                          <Button
+                                            type='button'
+                                            variant='ghost'
+                                            size='icon'
+                                            onClick={(e) => {
+                                              e.stopPropagation()
+                                              handleRemoveCrawledPage(page.id)
+                                            }}
+                                            disabled={!page.isCompleted}
+                                            className='text-destructive hover:bg-destructive/10 h-8 w-8 disabled:opacity-50'
+                                          >
+                                            <Trash2 className='h-4 w-4' />
+                                          </Button>
+                                        </div>
+                                      </CollapsibleTrigger>
+                                      <CollapsibleContent className='p-4'>
+                                        {!page.isCompleted ? (
+                                          <div className='flex min-h-64 items-center justify-center'>
+                                            <div className='flex flex-col items-center gap-2'>
+                                              <Loader2 className='text-muted-foreground h-6 w-6 animate-spin' />
+                                              <span className='text-muted-foreground text-sm'>
+                                                コンテンツを取得中...
+                                              </span>
+                                            </div>
+                                          </div>
+                                        ) : (
+                                          <Textarea
+                                            value={page.content}
+                                            readOnly
+                                            className='bg-muted/50 min-h-64 resize-none'
+                                          />
+                                        )}
+                                      </CollapsibleContent>
+                                    </div>
+                                  </Collapsible>
+                                ))}
+                                {crawledPages.length > 0 && (
+                                  <div className='flex items-center justify-end'>
+                                    <span className='text-muted-foreground text-sm font-medium'>
+                                      合計:{' '}
+                                      {
+                                        crawledPages.filter((p) => p.isEnabled)
+                                          .length
+                                      }
+                                      ページ /{' '}
+                                      {crawledPages
+                                        .filter((p) => p.isEnabled)
+                                        .reduce(
+                                          (sum, page) =>
+                                            sum + page.characterCount,
+                                          0
+                                        )
                                         .toLocaleString()}
+                                      文字
                                     </span>
                                   </div>
                                 )}
                               </div>
-                            </div>
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                  )}
+                            )}
+                          </FormItem>
+                        )}
+                      />
+                    )}
 
-                  {activeTab === 'website' && (
-                    <FormField
-                      control={form.control}
-                      name='website'
-                      render={({ field }) => (
-                        <FormItem>
-                          <div className='mb-2 flex flex-col gap-1'>
-                            <div className='flex items-center justify-between gap-2'>
-                              <span className='block text-sm font-bold'>
-                                ウェブサイト
-                              </span>
-                            </div>
-                            <span className='text-muted-foreground text-xs'>
-                              複数のURLを連続して追加できます。クロールは自動的にバックグラウンドで実行されます。（デモモード:
-                              サンプルデータを生成します）
-                            </span>
-                          </div>
-                          <FormControl>
-                            <div className='flex items-center gap-2'>
-                              <Input
-                                placeholder='https://example.com'
-                                className='flex-1 rounded-md'
-                                {...field}
-                              />
-                              <Button
-                                type='button'
-                                className='rounded-md bg-blue-600 text-white hover:bg-blue-700'
-                                disabled={
-                                  !field.value ||
-                                  field.value.trim() === '' ||
-                                  isFetchingLink ||
-                                  crawledPages.some(
-                                    (page) =>
-                                      field.value &&
-                                      page.url === field.value.trim()
-                                  )
-                                }
-                                onClick={async () => {
-                                  if (field.value) {
-                                    await handleDetectLinks(field.value)
-                                  }
-                                }}
-                              >
-                                {isFetchingLink ? (
-                                  <>
-                                    <Loader2 className='h-4 w-4 animate-spin' />
-                                    取得中...
-                                  </>
-                                ) : (
-                                  'リンクから取得'
-                                )}
-                              </Button>
-                            </div>
-                          </FormControl>
-                          <FormMessage />
-
-                          {/* Detected Links Section */}
-                          {detectedLinks.length > 0 && (
-                            <div className='mt-4 space-y-2 rounded-lg border p-4'>
-                              <div className='flex items-center gap-2'>
-                                <LinkIcon className='text-muted-foreground h-4 w-4' />
-                                <span className='text-sm font-bold'>
-                                  検出されたリンク（クリックして追加）
+                    {activeTab === 'text' && (
+                      <FormField
+                        control={form.control}
+                        name='textPages'
+                        render={() => (
+                          <FormItem>
+                            <div className='space-y-4'>
+                              <div className='mb-2 flex items-center gap-2'>
+                                <span className='block text-sm font-bold'>
+                                  コンテンツ
                                 </span>
+                                <Tooltip>
+                                  <TooltipTrigger asChild>
+                                    <Info className='text-muted-foreground h-4 w-4 cursor-help' />
+                                  </TooltipTrigger>
+                                  <TooltipContent className='max-w-xs'>
+                                    <div className='space-y-1 text-xs'>
+                                      <p>
+                                        複数のページを作成し、各ページに名前とコンテンツを設定できます。
+                                      </p>
+                                      <p>
+                                        各ページのコンテンツは、BOTの知識ベースとして使用され、質問への回答に活用されます。
+                                      </p>
+                                    </div>
+                                  </TooltipContent>
+                                </Tooltip>
                               </div>
-                              <div className='flex flex-wrap gap-2'>
-                                {detectedLinks.map((link, index) => (
-                                  <Button
-                                    key={index}
-                                    type='button'
-                                    variant='outline'
-                                    onClick={() => handleCrawlLink(link.url)}
-                                    className='h-auto rounded-full border-blue-200 bg-blue-50 px-3 py-1 text-xs text-blue-700 hover:bg-blue-100 hover:text-blue-800'
-                                  >
-                                    {link.url}
-                                  </Button>
-                                ))}
-                              </div>
-                            </div>
-                          )}
-
-                          {/* Crawled Pages Section */}
-                          {crawledPages.length > 0 && (
-                            <div className='mt-4 space-y-4'>
-                              <div className='mb-2'>
-                                <span className='text-sm font-bold'>
-                                  クロールされたページ
-                                </span>
-                              </div>
-                              {crawledPages.map((page) => (
+                              {textPages.map((page) => (
                                 <Collapsible
                                   key={page.id}
-                                  open={openCrawledPages.has(page.id)}
+                                  open={openCollapsibles.has(page.id)}
                                   onOpenChange={() =>
-                                    toggleCrawledPageCollapsible(page.id)
+                                    toggleCollapsible(page.id)
                                   }
+                                  className='mb-2'
                                 >
-                                  <div className='rounded-lg border'>
-                                    <CollapsibleTrigger className='bg-muted/50 hover:bg-muted/50 flex w-full items-center justify-between p-4'>
+                                  <div className='overflow-hidden rounded-lg border'>
+                                    <CollapsibleTrigger className='bg-muted hover:bg-muted/80 flex w-full items-center justify-between p-4'>
                                       <div className='flex items-center gap-2'>
-                                        <ChevronDown
-                                          className={cn(
-                                            'h-4 w-4 transition-transform',
-                                            openCrawledPages.has(page.id) &&
-                                              'rotate-180'
-                                          )}
-                                        />
                                         <span className='text-sm font-medium'>
-                                          {page.url}
+                                          {page.pageName
+                                            ? `${page.pageName}ページ`
+                                            : '新しいページ'}
                                         </span>
                                       </div>
                                       <div className='flex items-center gap-2'>
-                                        {!page.isCompleted ? (
-                                          <div className='bg-primary/10 flex items-center gap-1 rounded-full px-2 py-1'>
-                                            <Loader2 className='text-primary h-3 w-3 animate-spin' />
-                                            <span className='text-primary text-xs font-medium'>
-                                              クロール中...
-                                            </span>
-                                          </div>
-                                        ) : (
-                                          <div className='flex items-center gap-1 rounded-full bg-green-100 px-2 py-1 dark:bg-green-900/30'>
-                                            <Check className='h-3 w-3 text-green-700 dark:text-green-400' />
-                                            <span className='text-xs font-medium text-green-700 dark:text-green-400'>
-                                              完了 (
-                                              {page.characterCount.toLocaleString()}
-                                              文字)
-                                            </span>
-                                          </div>
-                                        )}
-                                        <Tooltip>
-                                          <TooltipTrigger asChild>
-                                            <div
-                                              onClick={(e) =>
-                                                e.stopPropagation()
-                                              }
-                                            >
-                                              <Switch
-                                                checked={page.isEnabled}
-                                                onCheckedChange={() =>
-                                                  handleToggleCrawledPage(
-                                                    page.id
-                                                  )
-                                                }
-                                                disabled={!page.isCompleted}
-                                              />
-                                            </div>
-                                          </TooltipTrigger>
-                                          <TooltipContent>
-                                            <p className='text-xs'>
-                                              {!page.isCompleted
-                                                ? 'クロール中...'
-                                                : page.isEnabled
-                                                  ? 'このページを無効にする'
-                                                  : 'このページを有効にする'}
-                                            </p>
-                                          </TooltipContent>
-                                        </Tooltip>
                                         <Button
                                           type='button'
                                           variant='ghost'
                                           size='icon'
                                           onClick={(e) => {
                                             e.stopPropagation()
-                                            handleRemoveCrawledPage(page.id)
+                                            handleRemoveTextPage(page.id)
                                           }}
-                                          disabled={!page.isCompleted}
-                                          className='text-destructive hover:bg-destructive/10 h-8 w-8 disabled:opacity-50'
+                                          className='text-destructive hover:bg-destructive/10 h-8 w-8'
                                         >
                                           <Trash2 className='h-4 w-4' />
                                         </Button>
+                                        <ChevronDown
+                                          className={cn(
+                                            'h-4 w-4 transition-transform',
+                                            openCollapsibles.has(page.id) &&
+                                              'rotate-180'
+                                          )}
+                                        />
                                       </div>
                                     </CollapsibleTrigger>
-                                    <CollapsibleContent className='p-4'>
-                                      {!page.isCompleted ? (
-                                        <div className='flex min-h-64 items-center justify-center'>
-                                          <div className='flex flex-col items-center gap-2'>
-                                            <Loader2 className='text-muted-foreground h-6 w-6 animate-spin' />
-                                            <span className='text-muted-foreground text-sm'>
-                                              コンテンツを取得中...
+                                    <CollapsibleContent className='px-4 pb-4'>
+                                      <div className='space-y-4 pt-2'>
+                                        <div>
+                                          <span className='mb-2 block text-sm font-medium'>
+                                            ページ名
+                                          </span>
+                                          <Input
+                                            placeholder='ページ名を入力'
+                                            value={page.pageName}
+                                            onChange={(e) =>
+                                              handleUpdateTextPage(
+                                                page.id,
+                                                'pageName',
+                                                e.target.value
+                                              )
+                                            }
+                                          />
+                                        </div>
+                                        <div>
+                                          <span className='mb-2 block text-sm font-medium'>
+                                            コンテンツ
+                                          </span>
+                                          <Textarea
+                                            placeholder='コンテンツを入力'
+                                            value={page.content}
+                                            onChange={(e) =>
+                                              handleUpdateTextPage(
+                                                page.id,
+                                                'content',
+                                                e.target.value
+                                              )
+                                            }
+                                            className='min-h-32'
+                                          />
+                                          <div className='mt-2 flex items-center justify-end'>
+                                            <span className='text-muted-foreground text-xs'>
+                                              検出された文字数:{' '}
+                                              {page.content?.length?.toLocaleString()}
                                             </span>
                                           </div>
                                         </div>
-                                      ) : (
-                                        <Textarea
-                                          value={page.content}
-                                          readOnly
-                                          className='bg-muted/50 min-h-64 resize-none'
-                                        />
-                                      )}
+                                      </div>
                                     </CollapsibleContent>
                                   </div>
                                 </Collapsible>
                               ))}
-                              {crawledPages.length > 0 && (
+                              {textPages.length > 0 && (
                                 <div className='flex items-center justify-end'>
                                   <span className='text-muted-foreground text-sm font-medium'>
-                                    合計:{' '}
-                                    {
-                                      crawledPages.filter((p) => p.isEnabled)
-                                        .length
-                                    }
-                                    ページ /{' '}
-                                    {crawledPages
-                                      .filter((p) => p.isEnabled)
+                                    全ページの合計文字数:{' '}
+                                    {textPages
                                       .reduce(
                                         (sum, page) =>
-                                          sum + page.characterCount,
+                                          sum + (page.content?.length || 0),
                                         0
                                       )
                                       .toLocaleString()}
-                                    文字
                                   </span>
                                 </div>
                               )}
-                            </div>
-                          )}
-                        </FormItem>
-                      )}
-                    />
-                  )}
-
-                  {activeTab === 'text' && (
-                    <FormField
-                      control={form.control}
-                      name='textPages'
-                      render={() => (
-                        <FormItem>
-                          <div className='space-y-4'>
-                            <div className='mb-2 flex items-center gap-2'>
-                              <span className='block text-sm font-bold'>
-                                コンテンツ
-                              </span>
-                              <Tooltip>
-                                <TooltipTrigger asChild>
-                                  <Info className='text-muted-foreground h-4 w-4 cursor-help' />
-                                </TooltipTrigger>
-                                <TooltipContent className='max-w-xs'>
-                                  <div className='space-y-1 text-xs'>
-                                    <p>
-                                      複数のページを作成し、各ページに名前とコンテンツを設定できます。
-                                    </p>
-                                    <p>
-                                      各ページのコンテンツは、BOTの知識ベースとして使用され、質問への回答に活用されます。
-                                    </p>
-                                  </div>
-                                </TooltipContent>
-                              </Tooltip>
-                            </div>
-                            {textPages.map((page) => (
-                              <Collapsible
-                                key={page.id}
-                                open={openCollapsibles.has(page.id)}
-                                onOpenChange={() => toggleCollapsible(page.id)}
-                              >
-                                <div className='rounded-lg border'>
-                                  <CollapsibleTrigger className='hover:bg-muted/50 flex w-full items-center justify-between p-4'>
-                                    <div className='flex items-center gap-2'>
-                                      <span className='font-medium'>
-                                        {page.pageName
-                                          ? `${page.pageName}ページ`
-                                          : '新しいページ'}
-                                      </span>
-                                    </div>
-                                    <div className='flex items-center gap-2'>
-                                      <Button
-                                        type='button'
-                                        variant='ghost'
-                                        size='icon'
-                                        onClick={(e) => {
-                                          e.stopPropagation()
-                                          handleRemoveTextPage(page.id)
-                                        }}
-                                        className='text-destructive hover:bg-destructive/10 h-8 w-8'
-                                      >
-                                        <Trash2 className='h-4 w-4' />
-                                      </Button>
-                                      <ChevronDown
-                                        className={cn(
-                                          'h-4 w-4 transition-transform',
-                                          openCollapsibles.has(page.id) &&
-                                            'rotate-180'
-                                        )}
-                                      />
-                                    </div>
-                                  </CollapsibleTrigger>
-                                  <CollapsibleContent className='px-4 pb-4'>
-                                    <div className='space-y-4 pt-2'>
-                                      <div>
-                                        <span className='mb-2 block text-sm font-medium'>
-                                          ページ名
-                                        </span>
-                                        <Input
-                                          placeholder='ページ名を入力'
-                                          value={page.pageName}
-                                          onChange={(e) =>
-                                            handleUpdateTextPage(
-                                              page.id,
-                                              'pageName',
-                                              e.target.value
-                                            )
-                                          }
-                                        />
-                                      </div>
-                                      <div>
-                                        <span className='mb-2 block text-sm font-medium'>
-                                          コンテンツ
-                                        </span>
-                                        <Textarea
-                                          placeholder='コンテンツを入力'
-                                          value={page.content}
-                                          onChange={(e) =>
-                                            handleUpdateTextPage(
-                                              page.id,
-                                              'content',
-                                              e.target.value
-                                            )
-                                          }
-                                          className='min-h-32'
-                                        />
-                                        <div className='mt-2 flex items-center justify-end'>
-                                          <span className='text-muted-foreground text-xs'>
-                                            検出された文字数:{' '}
-                                            {page.content?.length?.toLocaleString()}
-                                          </span>
-                                        </div>
-                                      </div>
-                                    </div>
-                                  </CollapsibleContent>
-                                </div>
-                              </Collapsible>
-                            ))}
-                            {textPages.length > 0 && (
-                              <div className='flex items-center justify-end'>
-                                <span className='text-muted-foreground text-sm font-medium'>
-                                  全ページの合計文字数:{' '}
-                                  {textPages
-                                    .reduce(
-                                      (sum, page) =>
-                                        sum + (page.content?.length || 0),
-                                      0
-                                    )
-                                    .toLocaleString()}
-                                </span>
+                              <div className='flex items-center justify-center'>
+                                <Button
+                                  type='button'
+                                  onClick={handleAddTextPage}
+                                  className='w-fit'
+                                >
+                                  <Plus className='size-4' />
+                                  ページを追加
+                                </Button>
                               </div>
-                            )}
-                            <div className='flex items-center justify-center'>
-                              <Button
-                                type='button'
-                                onClick={handleAddTextPage}
-                                className='w-fit'
-                              >
-                                <Plus className='size-4' />
-                                ページを追加
-                              </Button>
                             </div>
-                          </div>
-                        </FormItem>
-                      )}
-                    />
-                  )}
-
-                  <div className='flex items-center justify-end gap-4 pt-4'>
-                    <Button
-                      type='button'
-                      onClick={handleCancel}
-                      disabled={isLoading}
-                      className='h-10 w-24 text-white hover:opacity-90'
-                      style={{ backgroundColor: '#6B7280' }}
-                    >
-                      キャンセル
-                    </Button>
-                    {!isNew && (
-                      <Button
-                        type='button'
-                        onClick={handleDelete}
-                        disabled={isLoading}
-                        className='h-10 w-24 text-white hover:opacity-90'
-                        style={{ backgroundColor: '#EF4444' }}
-                      >
-                        <Trash2 className='size-4' />
-                        削除
-                      </Button>
+                          </FormItem>
+                        )}
+                      />
                     )}
-
-                    <Button
-                      type='submit'
-                      disabled={isLoading}
-                      className='h-10 w-24 text-white hover:opacity-90'
-                      style={{ backgroundColor: '#3B82F6' }}
-                    >
-                      {isLoading
-                        ? isNew
-                          ? '作成中...'
-                          : '更新中...'
-                        : isNew
-                          ? '作成'
-                          : '更新'}
-                    </Button>
                   </div>
-                </form>
-              </Form>
-            </ContentSection>
-          </div>
-        </div>
+                </ContentSection>
+              </div>
+            </div>
+            <div className='bg-background flex shrink-0 items-center justify-end gap-4 border-t pt-4 pr-[2%] shadow-[0_-1px_2px_rgba(0,0,0,0.05)]'>
+              <Button
+                type='button'
+                onClick={handleCancel}
+                disabled={isLoading}
+                className='h-10 w-24 text-white hover:opacity-90'
+                style={{ backgroundColor: '#6B7280' }}
+              >
+                キャンセル
+              </Button>
+              {!isNew && (
+                <Button
+                  type='button'
+                  onClick={handleDelete}
+                  disabled={isLoading}
+                  className='h-10 w-24 text-white hover:opacity-90'
+                  style={{ backgroundColor: '#EF4444' }}
+                >
+                  <Trash2 className='size-4' />
+                  削除
+                </Button>
+              )}
+
+              <Button
+                type='submit'
+                disabled={isLoading}
+                className='h-10 w-24 text-white hover:opacity-90'
+                style={{ backgroundColor: '#3B82F6' }}
+              >
+                {isLoading
+                  ? isNew
+                    ? '作成中...'
+                    : '更新中...'
+                  : isNew
+                    ? '作成'
+                    : '更新'}
+              </Button>
+            </div>
+          </form>
+        </Form>
 
         <ConfirmDialog
           open={showDeleteDialog}

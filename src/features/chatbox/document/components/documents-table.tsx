@@ -1,5 +1,4 @@
 import { useEffect, useState } from 'react'
-import { useNavigate } from '@tanstack/react-router'
 import {
   type SortingState,
   type VisibilityState,
@@ -10,11 +9,9 @@ import {
   getSortedRowModel,
   useReactTable,
 } from '@tanstack/react-table'
-import { FileSearch, Plus, SearchIcon } from 'lucide-react'
+import { FileSearch } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { type NavigateFn, useTableUrlState } from '@/hooks/use-table-url-state'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
 import {
   Table,
   TableBody,
@@ -32,26 +29,6 @@ type DataTableProps = {
   data: Document[]
   search: Record<string, unknown>
   navigate: NavigateFn
-}
-
-function AddDocumentButton() {
-  const navigate = useNavigate()
-
-  const handleCreate = () => {
-    navigate({
-      to: '/chatbox/document/new',
-    })
-  }
-
-  return (
-    <Button
-      className='bg-blue-600 text-white hover:bg-blue-700'
-      onClick={handleCreate}
-    >
-      <Plus className='h-4 w-4' />
-      ドキュメントを追加
-    </Button>
-  )
 }
 
 export function DocumentsTable({ data, search, navigate }: DataTableProps) {
@@ -112,22 +89,6 @@ export function DocumentsTable({ data, search, navigate }: DataTableProps) {
         'flex flex-1 flex-col gap-4'
       )}
     >
-      <div className='flex items-center justify-end gap-2'>
-        <div className='relative w-full sm:w-40 md:w-52 lg:w-64'>
-          <SearchIcon
-            aria-hidden='true'
-            className='text-muted-foreground absolute start-3 top-1/2 -translate-y-1/2'
-            size={18}
-          />
-          <Input
-            placeholder='検索...'
-            value={table.getState().globalFilter ?? ''}
-            onChange={(event) => table.setGlobalFilter(event.target.value)}
-            className='bg-muted/25 h-9 ps-9 text-sm'
-          />
-        </div>
-        <AddDocumentButton />
-      </div>
       <div className='overflow-x-auto rounded-md border'>
         <Table>
           <TableHeader>

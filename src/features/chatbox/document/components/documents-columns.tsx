@@ -122,12 +122,12 @@ export const documentsColumns: ColumnDef<Document>[] = [
     enableSorting: true,
   },
   {
-    accessorKey: 'documentTypes',
+    accessorKey: 'documentType',
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title='種類' />
     ),
     cell: ({ row }) => {
-      const documentTypes = row.getValue('documentTypes') as DocumentType[]
+      const documentType = row.getValue('documentType') as DocumentType
       const typeConfig: Record<
         DocumentType,
         { label: string; icon: React.ReactNode; className: string }
@@ -153,29 +153,19 @@ export const documentsColumns: ColumnDef<Document>[] = [
       }
 
       return (
-        <div className='flex items-center gap-2 text-sm'>
-          {documentTypes.map((type) => (
-            <Badge
-              key={type}
-              variant='outline'
-              className={cn(
-                'flex items-center gap-1',
-                typeConfig[type].className
-              )}
-            >
-              {typeConfig[type].icon}
-              <span>{typeConfig[type].label}</span>
-            </Badge>
-          ))}
-        </div>
+        <Badge
+          variant='outline'
+          className={cn(
+            'flex items-center gap-1',
+            typeConfig[documentType].className
+          )}
+        >
+          {typeConfig[documentType].icon}
+          <span>{typeConfig[documentType].label}</span>
+        </Badge>
       )
     },
     enableSorting: true,
-    sortingFn: (rowA, rowB) => {
-      const typesA = rowA.getValue('documentTypes') as DocumentType[]
-      const typesB = rowB.getValue('documentTypes') as DocumentType[]
-      return typesA.length - typesB.length
-    },
   },
   {
     accessorKey: 'totalCharacterCount',
