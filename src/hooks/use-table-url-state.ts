@@ -133,11 +133,12 @@ export function useTableUrlState(
     })
   }
 
-  const [globalFilter, setGlobalFilter] = useState<string | undefined>(() => {
+  // Compute globalFilter directly from search params instead of using state
+  const globalFilter: string | undefined = useMemo(() => {
     if (!globalFilterEnabled) return undefined
     const raw = (search as SearchRecord)[globalFilterKey]
     return typeof raw === 'string' ? raw : ''
-  })
+  }, [search, globalFilterKey, globalFilterEnabled])
 
   const onGlobalFilterChange: OnChangeFn<string> | undefined =
     globalFilterEnabled
@@ -147,7 +148,6 @@ export function useTableUrlState(
               ? updater(globalFilter ?? '')
               : updater
           const value = trimGlobal ? next.trim() : next
-          setGlobalFilter(value)
           navigate({
             search: (prev) => ({
               ...(prev as SearchRecord),

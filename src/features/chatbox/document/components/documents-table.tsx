@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import {
+  type OnChangeFn,
   type SortingState,
   type VisibilityState,
   flexRender,
@@ -29,26 +30,40 @@ type DataTableProps = {
   data: Document[]
   search: Record<string, unknown>
   navigate: NavigateFn
+  globalFilter?: string
+  onGlobalFilterChange?: (value: string) => void
 }
 
-export function DocumentsTable({ data, search, navigate }: DataTableProps) {
+export function DocumentsTable({
+  data,
+  search,
+  navigate,
+  globalFilter: externalGlobalFilter,
+  onGlobalFilterChange: externalOnGlobalFilterChange,
+}: DataTableProps) {
   // Local UI-only states
   const [sorting, setSorting] = useState<SortingState>([])
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({})
 
-  // Synced with URL states
-  const {
-    globalFilter,
-    onGlobalFilterChange,
-    pagination,
-    onPaginationChange,
-    ensurePageInRange,
-  } = useTableUrlState({
-    search,
-    navigate,
-    pagination: { defaultPage: 1, defaultPageSize: 10 },
-    globalFilter: { enabled: true, key: 'filter' },
-  })
+  // Synced with URL states (pagination only, not globalFilter)
+  const { pagination, onPaginationChange, ensurePageInRange } =
+    useTableUrlState({
+      search,
+      navigate,
+      pagination: { defaultPage: 1, defaultPageSize: 10 },
+      globalFilter: { enabled: false },
+    })
+
+  // Use external globalFilter if provided, otherwise use empty string
+  const globalFilter = externalGlobalFilter ?? ''
+  const onGlobalFilterChange: OnChangeFn<string> | undefined =
+    externalOnGlobalFilterChange
+      ? (updater) => {
+          const next =
+            typeof updater === 'function' ? updater(globalFilter) : updater
+          externalOnGlobalFilterChange(next)
+        }
+      : undefined
 
   // eslint-disable-next-line react-hooks/incompatible-library
   const table = useReactTable({

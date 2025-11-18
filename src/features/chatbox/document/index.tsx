@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import { getRouteApi, useNavigate } from '@tanstack/react-router'
 import { Plus, SearchIcon } from 'lucide-react'
 import { Button } from '@/components/ui/button'
@@ -15,6 +16,7 @@ export function TrainingDocument() {
   const search = route.useSearch()
   const routeNavigate = route.useNavigate()
   const navigate = useNavigate()
+  const [searchQuery, setSearchQuery] = useState('')
 
   const navigateSearch: (opts: {
     search:
@@ -54,14 +56,9 @@ export function TrainingDocument() {
               />
               <Input
                 placeholder='検索...'
-                value={(search.filter as string) ?? ''}
+                value={searchQuery}
                 onChange={(event) => {
-                  navigateSearch({
-                    search: (prev) => ({
-                      ...prev,
-                      filter: event.target.value || undefined,
-                    }),
-                  })
+                  setSearchQuery(event.target.value)
                 }}
                 className='bg-muted/25 h-9 ps-9 text-sm'
               />
@@ -83,6 +80,8 @@ export function TrainingDocument() {
           data={documents}
           search={search}
           navigate={navigateSearch}
+          globalFilter={searchQuery}
+          onGlobalFilterChange={setSearchQuery}
         />
       </Main>
     </>
