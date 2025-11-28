@@ -25,7 +25,7 @@ export function exportToTXT(conversations: Conversation[]): string {
     content += `Message Count: ${conv.messageCount}\n`
     content += `\n--- Messages ---\n\n`
 
-    conv.messages.forEach((msg, msgIndex) => {
+    conv.messages.forEach((msg, _msgIndex) => {
       const sender = msg.sender === 'user' ? 'User' : 'Bot'
       const timestamp = format(new Date(msg.timestamp), 'yyyy-MM-dd HH:mm:ss', {
         locale: ja,
