@@ -1,6 +1,13 @@
 import { useRef } from 'react'
 import { format } from 'date-fns'
-import { Bot as BotIcon, Calendar, Eye, Pencil, User } from 'lucide-react'
+import {
+  Bot as BotIcon,
+  Calendar,
+  Eye,
+  History,
+  Pencil,
+  User,
+} from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
@@ -11,6 +18,7 @@ type BotCardProps = {
   bot: Bot
   onPreview?: (bot: Bot) => void
   onEdit?: (bot: Bot) => void
+  onShowLogs?: (bot: Bot) => void
 }
 
 const statusConfig = {
@@ -31,7 +39,7 @@ const statusConfig = {
   },
 } as const
 
-export function BotCard({ bot, onPreview, onEdit }: BotCardProps) {
+export function BotCard({ bot, onPreview, onEdit, onShowLogs }: BotCardProps) {
   const status = statusConfig[bot.status]
   const titleRef = useRef<HTMLHeadingElement>(null)
 
@@ -100,33 +108,44 @@ export function BotCard({ bot, onPreview, onEdit }: BotCardProps) {
           </div>
         </div>
       </CardContent>
-      <CardFooter className='mt-auto flex h-8 items-center gap-2 border-t'>
+      <CardFooter className='mt-auto flex flex-col gap-2 border-t'>
+        <div className='flex w-full items-center gap-2'>
+          <Button
+            variant='default'
+            size='sm'
+            className='flex-1 text-white hover:opacity-90'
+            style={{ backgroundColor: '#19A2B8' }}
+            onClick={() => {
+              window.open(
+                'http://35.213.11.57/conference/1/company/5?click-action=company_card_at_company_index&point-action=collaboration_company_show',
+                '_blank',
+                'noopener,noreferrer'
+              )
+              onPreview?.(bot)
+            }}
+          >
+            <Eye className='size-4' />
+            プレビュー
+          </Button>
+          <Button
+            variant='default'
+            size='sm'
+            className='flex-1 text-white hover:opacity-90'
+            style={{ backgroundColor: '#3B82F6' }}
+            onClick={() => onEdit?.(bot)}
+          >
+            <Pencil className='size-4' />
+            編集
+          </Button>
+        </div>
         <Button
-          variant='default'
+          variant='outline'
           size='sm'
-          className='flex-1 text-white hover:opacity-90'
-          style={{ backgroundColor: '#19A2B8' }}
-          onClick={() => {
-            window.open(
-              'http://35.213.11.57/conference/1/company/5?click-action=company_card_at_company_index&point-action=collaboration_company_show',
-              '_blank',
-              'noopener,noreferrer'
-            )
-            onPreview?.(bot)
-          }}
+          className='w-full'
+          onClick={() => onShowLogs?.(bot)}
         >
-          <Eye className='size-4' />
-          プレビュー
-        </Button>
-        <Button
-          variant='default'
-          size='sm'
-          className='flex-1 text-white hover:opacity-90'
-          style={{ backgroundColor: '#3B82F6' }}
-          onClick={() => onEdit?.(bot)}
-        >
-          <Pencil className='size-4' />
-          編集
+          <History className='size-4' />
+          ログを見る
         </Button>
       </CardFooter>
     </Card>

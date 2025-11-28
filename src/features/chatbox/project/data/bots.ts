@@ -14,7 +14,7 @@ export type Bot = {
 export const bots: Bot[] = [
   {
     id: '1',
-    name: 'Customer Support Bot Customer Support Bot',
+    name: 'Customer Support Bot',
     status: 'completed',
     lastTrainingDate: new Date('2024-01-15T10:30:00'),
     lastUpdatedBy: '田中太郎',

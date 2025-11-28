@@ -44,6 +44,13 @@ export function ListBot() {
     navigate({ to: '/chatbox/project/update/$id', params: { id: bot.id } })
   }
 
+  const handleShowLogs = (bot: Bot) => {
+    navigate({
+      to: '/chatbox/project/$id/recent',
+      params: { id: bot.id },
+    })
+  }
+
   return (
     <>
       <Header fixed title='出展者ＢＯＴの管理 | 株式会社日本医工研究所'>
@@ -109,6 +116,7 @@ export function ListBot() {
                 bot={bot}
                 onPreview={handlePreview}
                 onEdit={handleEdit}
+                onShowLogs={handleShowLogs}
               />
             ))}
           </div>

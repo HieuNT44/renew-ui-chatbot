@@ -15,9 +15,14 @@ import { Route as AuthenticatedErrorsErrorRouteImport } from './routes/_authenti
 import { Route as AuthenticatedChatboxProjectIndexRouteImport } from './routes/_authenticated/chatbox/project/index'
 import { Route as AuthenticatedChatboxDocumentIndexRouteImport } from './routes/_authenticated/chatbox/document/index'
 import { Route as AuthenticatedChatboxProjectNewRouteImport } from './routes/_authenticated/chatbox/project/new'
+import { Route as AuthenticatedChatboxProjectIdRouteImport } from './routes/_authenticated/chatbox/project/$id'
 import { Route as AuthenticatedChatboxDocumentNewRouteImport } from './routes/_authenticated/chatbox/document/new'
 import { Route as AuthenticatedChatboxProjectUpdateIdRouteImport } from './routes/_authenticated/chatbox/project/update/$id'
+import { Route as AuthenticatedChatboxProjectLogsIdRouteImport } from './routes/_authenticated/chatbox/project/logs/$id'
+import { Route as AuthenticatedChatboxProjectIdRecentRouteImport } from './routes/_authenticated/chatbox/project/$id/recent'
 import { Route as AuthenticatedChatboxDocumentUpdateIdRouteImport } from './routes/_authenticated/chatbox/document/update/$id'
+import { Route as AuthenticatedChatboxProjectIdRecentIndexRouteImport } from './routes/_authenticated/chatbox/project/$id/recent/index'
+import { Route as AuthenticatedChatboxProjectIdRecentChatIdRouteImport } from './routes/_authenticated/chatbox/project/$id/recent/$chatId'
 
 const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
   id: '/_authenticated',
@@ -52,6 +57,12 @@ const AuthenticatedChatboxProjectNewRoute =
     path: '/chatbox/project/new',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AuthenticatedChatboxProjectIdRoute =
+  AuthenticatedChatboxProjectIdRouteImport.update({
+    id: '/chatbox/project/$id',
+    path: '/chatbox/project/$id',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedChatboxDocumentNewRoute =
   AuthenticatedChatboxDocumentNewRouteImport.update({
     id: '/chatbox/document/new',
@@ -64,32 +75,65 @@ const AuthenticatedChatboxProjectUpdateIdRoute =
     path: '/chatbox/project/update/$id',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AuthenticatedChatboxProjectLogsIdRoute =
+  AuthenticatedChatboxProjectLogsIdRouteImport.update({
+    id: '/chatbox/project/logs/$id',
+    path: '/chatbox/project/logs/$id',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedChatboxProjectIdRecentRoute =
+  AuthenticatedChatboxProjectIdRecentRouteImport.update({
+    id: '/recent',
+    path: '/recent',
+    getParentRoute: () => AuthenticatedChatboxProjectIdRoute,
+  } as any)
 const AuthenticatedChatboxDocumentUpdateIdRoute =
   AuthenticatedChatboxDocumentUpdateIdRouteImport.update({
     id: '/chatbox/document/update/$id',
     path: '/chatbox/document/update/$id',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AuthenticatedChatboxProjectIdRecentIndexRoute =
+  AuthenticatedChatboxProjectIdRecentIndexRouteImport.update({
+    id: '/',
+    path: '/',
+    getParentRoute: () => AuthenticatedChatboxProjectIdRecentRoute,
+  } as any)
+const AuthenticatedChatboxProjectIdRecentChatIdRoute =
+  AuthenticatedChatboxProjectIdRecentChatIdRouteImport.update({
+    id: '/$chatId',
+    path: '/$chatId',
+    getParentRoute: () => AuthenticatedChatboxProjectIdRecentRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof AuthenticatedIndexRoute
   '/errors/$error': typeof AuthenticatedErrorsErrorRoute
   '/chatbox/document/new': typeof AuthenticatedChatboxDocumentNewRoute
+  '/chatbox/project/$id': typeof AuthenticatedChatboxProjectIdRouteWithChildren
   '/chatbox/project/new': typeof AuthenticatedChatboxProjectNewRoute
   '/chatbox/document': typeof AuthenticatedChatboxDocumentIndexRoute
   '/chatbox/project': typeof AuthenticatedChatboxProjectIndexRoute
   '/chatbox/document/update/$id': typeof AuthenticatedChatboxDocumentUpdateIdRoute
+  '/chatbox/project/$id/recent': typeof AuthenticatedChatboxProjectIdRecentRouteWithChildren
+  '/chatbox/project/logs/$id': typeof AuthenticatedChatboxProjectLogsIdRoute
   '/chatbox/project/update/$id': typeof AuthenticatedChatboxProjectUpdateIdRoute
+  '/chatbox/project/$id/recent/$chatId': typeof AuthenticatedChatboxProjectIdRecentChatIdRoute
+  '/chatbox/project/$id/recent/': typeof AuthenticatedChatboxProjectIdRecentIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof AuthenticatedIndexRoute
   '/errors/$error': typeof AuthenticatedErrorsErrorRoute
   '/chatbox/document/new': typeof AuthenticatedChatboxDocumentNewRoute
+  '/chatbox/project/$id': typeof AuthenticatedChatboxProjectIdRouteWithChildren
   '/chatbox/project/new': typeof AuthenticatedChatboxProjectNewRoute
   '/chatbox/document': typeof AuthenticatedChatboxDocumentIndexRoute
   '/chatbox/project': typeof AuthenticatedChatboxProjectIndexRoute
   '/chatbox/document/update/$id': typeof AuthenticatedChatboxDocumentUpdateIdRoute
+  '/chatbox/project/logs/$id': typeof AuthenticatedChatboxProjectLogsIdRoute
   '/chatbox/project/update/$id': typeof AuthenticatedChatboxProjectUpdateIdRoute
+  '/chatbox/project/$id/recent/$chatId': typeof AuthenticatedChatboxProjectIdRecentChatIdRoute
+  '/chatbox/project/$id/recent': typeof AuthenticatedChatboxProjectIdRecentIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -97,11 +141,16 @@ export interface FileRoutesById {
   '/_authenticated/': typeof AuthenticatedIndexRoute
   '/_authenticated/errors/$error': typeof AuthenticatedErrorsErrorRoute
   '/_authenticated/chatbox/document/new': typeof AuthenticatedChatboxDocumentNewRoute
+  '/_authenticated/chatbox/project/$id': typeof AuthenticatedChatboxProjectIdRouteWithChildren
   '/_authenticated/chatbox/project/new': typeof AuthenticatedChatboxProjectNewRoute
   '/_authenticated/chatbox/document/': typeof AuthenticatedChatboxDocumentIndexRoute
   '/_authenticated/chatbox/project/': typeof AuthenticatedChatboxProjectIndexRoute
   '/_authenticated/chatbox/document/update/$id': typeof AuthenticatedChatboxDocumentUpdateIdRoute
+  '/_authenticated/chatbox/project/$id/recent': typeof AuthenticatedChatboxProjectIdRecentRouteWithChildren
+  '/_authenticated/chatbox/project/logs/$id': typeof AuthenticatedChatboxProjectLogsIdRoute
   '/_authenticated/chatbox/project/update/$id': typeof AuthenticatedChatboxProjectUpdateIdRoute
+  '/_authenticated/chatbox/project/$id/recent/$chatId': typeof AuthenticatedChatboxProjectIdRecentChatIdRoute
+  '/_authenticated/chatbox/project/$id/recent/': typeof AuthenticatedChatboxProjectIdRecentIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -109,32 +158,46 @@ export interface FileRouteTypes {
     | '/'
     | '/errors/$error'
     | '/chatbox/document/new'
+    | '/chatbox/project/$id'
     | '/chatbox/project/new'
     | '/chatbox/document'
     | '/chatbox/project'
     | '/chatbox/document/update/$id'
+    | '/chatbox/project/$id/recent'
+    | '/chatbox/project/logs/$id'
     | '/chatbox/project/update/$id'
+    | '/chatbox/project/$id/recent/$chatId'
+    | '/chatbox/project/$id/recent/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/errors/$error'
     | '/chatbox/document/new'
+    | '/chatbox/project/$id'
     | '/chatbox/project/new'
     | '/chatbox/document'
     | '/chatbox/project'
     | '/chatbox/document/update/$id'
+    | '/chatbox/project/logs/$id'
     | '/chatbox/project/update/$id'
+    | '/chatbox/project/$id/recent/$chatId'
+    | '/chatbox/project/$id/recent'
   id:
     | '__root__'
     | '/_authenticated'
     | '/_authenticated/'
     | '/_authenticated/errors/$error'
     | '/_authenticated/chatbox/document/new'
+    | '/_authenticated/chatbox/project/$id'
     | '/_authenticated/chatbox/project/new'
     | '/_authenticated/chatbox/document/'
     | '/_authenticated/chatbox/project/'
     | '/_authenticated/chatbox/document/update/$id'
+    | '/_authenticated/chatbox/project/$id/recent'
+    | '/_authenticated/chatbox/project/logs/$id'
     | '/_authenticated/chatbox/project/update/$id'
+    | '/_authenticated/chatbox/project/$id/recent/$chatId'
+    | '/_authenticated/chatbox/project/$id/recent/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -185,6 +248,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedChatboxProjectNewRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/chatbox/project/$id': {
+      id: '/_authenticated/chatbox/project/$id'
+      path: '/chatbox/project/$id'
+      fullPath: '/chatbox/project/$id'
+      preLoaderRoute: typeof AuthenticatedChatboxProjectIdRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/chatbox/document/new': {
       id: '/_authenticated/chatbox/document/new'
       path: '/chatbox/document/new'
@@ -199,6 +269,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedChatboxProjectUpdateIdRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/chatbox/project/logs/$id': {
+      id: '/_authenticated/chatbox/project/logs/$id'
+      path: '/chatbox/project/logs/$id'
+      fullPath: '/chatbox/project/logs/$id'
+      preLoaderRoute: typeof AuthenticatedChatboxProjectLogsIdRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/chatbox/project/$id/recent': {
+      id: '/_authenticated/chatbox/project/$id/recent'
+      path: '/recent'
+      fullPath: '/chatbox/project/$id/recent'
+      preLoaderRoute: typeof AuthenticatedChatboxProjectIdRecentRouteImport
+      parentRoute: typeof AuthenticatedChatboxProjectIdRoute
+    }
     '/_authenticated/chatbox/document/update/$id': {
       id: '/_authenticated/chatbox/document/update/$id'
       path: '/chatbox/document/update/$id'
@@ -206,17 +290,66 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedChatboxDocumentUpdateIdRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/chatbox/project/$id/recent/': {
+      id: '/_authenticated/chatbox/project/$id/recent/'
+      path: '/'
+      fullPath: '/chatbox/project/$id/recent/'
+      preLoaderRoute: typeof AuthenticatedChatboxProjectIdRecentIndexRouteImport
+      parentRoute: typeof AuthenticatedChatboxProjectIdRecentRoute
+    }
+    '/_authenticated/chatbox/project/$id/recent/$chatId': {
+      id: '/_authenticated/chatbox/project/$id/recent/$chatId'
+      path: '/$chatId'
+      fullPath: '/chatbox/project/$id/recent/$chatId'
+      preLoaderRoute: typeof AuthenticatedChatboxProjectIdRecentChatIdRouteImport
+      parentRoute: typeof AuthenticatedChatboxProjectIdRecentRoute
+    }
   }
 }
+
+interface AuthenticatedChatboxProjectIdRecentRouteChildren {
+  AuthenticatedChatboxProjectIdRecentChatIdRoute: typeof AuthenticatedChatboxProjectIdRecentChatIdRoute
+  AuthenticatedChatboxProjectIdRecentIndexRoute: typeof AuthenticatedChatboxProjectIdRecentIndexRoute
+}
+
+const AuthenticatedChatboxProjectIdRecentRouteChildren: AuthenticatedChatboxProjectIdRecentRouteChildren =
+  {
+    AuthenticatedChatboxProjectIdRecentChatIdRoute:
+      AuthenticatedChatboxProjectIdRecentChatIdRoute,
+    AuthenticatedChatboxProjectIdRecentIndexRoute:
+      AuthenticatedChatboxProjectIdRecentIndexRoute,
+  }
+
+const AuthenticatedChatboxProjectIdRecentRouteWithChildren =
+  AuthenticatedChatboxProjectIdRecentRoute._addFileChildren(
+    AuthenticatedChatboxProjectIdRecentRouteChildren,
+  )
+
+interface AuthenticatedChatboxProjectIdRouteChildren {
+  AuthenticatedChatboxProjectIdRecentRoute: typeof AuthenticatedChatboxProjectIdRecentRouteWithChildren
+}
+
+const AuthenticatedChatboxProjectIdRouteChildren: AuthenticatedChatboxProjectIdRouteChildren =
+  {
+    AuthenticatedChatboxProjectIdRecentRoute:
+      AuthenticatedChatboxProjectIdRecentRouteWithChildren,
+  }
+
+const AuthenticatedChatboxProjectIdRouteWithChildren =
+  AuthenticatedChatboxProjectIdRoute._addFileChildren(
+    AuthenticatedChatboxProjectIdRouteChildren,
+  )
 
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedIndexRoute: typeof AuthenticatedIndexRoute
   AuthenticatedErrorsErrorRoute: typeof AuthenticatedErrorsErrorRoute
   AuthenticatedChatboxDocumentNewRoute: typeof AuthenticatedChatboxDocumentNewRoute
+  AuthenticatedChatboxProjectIdRoute: typeof AuthenticatedChatboxProjectIdRouteWithChildren
   AuthenticatedChatboxProjectNewRoute: typeof AuthenticatedChatboxProjectNewRoute
   AuthenticatedChatboxDocumentIndexRoute: typeof AuthenticatedChatboxDocumentIndexRoute
   AuthenticatedChatboxProjectIndexRoute: typeof AuthenticatedChatboxProjectIndexRoute
   AuthenticatedChatboxDocumentUpdateIdRoute: typeof AuthenticatedChatboxDocumentUpdateIdRoute
+  AuthenticatedChatboxProjectLogsIdRoute: typeof AuthenticatedChatboxProjectLogsIdRoute
   AuthenticatedChatboxProjectUpdateIdRoute: typeof AuthenticatedChatboxProjectUpdateIdRoute
 }
 
@@ -224,12 +357,16 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedIndexRoute: AuthenticatedIndexRoute,
   AuthenticatedErrorsErrorRoute: AuthenticatedErrorsErrorRoute,
   AuthenticatedChatboxDocumentNewRoute: AuthenticatedChatboxDocumentNewRoute,
+  AuthenticatedChatboxProjectIdRoute:
+    AuthenticatedChatboxProjectIdRouteWithChildren,
   AuthenticatedChatboxProjectNewRoute: AuthenticatedChatboxProjectNewRoute,
   AuthenticatedChatboxDocumentIndexRoute:
     AuthenticatedChatboxDocumentIndexRoute,
   AuthenticatedChatboxProjectIndexRoute: AuthenticatedChatboxProjectIndexRoute,
   AuthenticatedChatboxDocumentUpdateIdRoute:
     AuthenticatedChatboxDocumentUpdateIdRoute,
+  AuthenticatedChatboxProjectLogsIdRoute:
+    AuthenticatedChatboxProjectLogsIdRoute,
   AuthenticatedChatboxProjectUpdateIdRoute:
     AuthenticatedChatboxProjectUpdateIdRoute,
 }
