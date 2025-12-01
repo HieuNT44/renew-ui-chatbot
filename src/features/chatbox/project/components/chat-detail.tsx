@@ -8,6 +8,7 @@ import {
   Bot as BotIcon,
   Clock,
   MessageSquareMore,
+  Menu,
   Search as SearchIcon,
   User,
 } from 'lucide-react'
@@ -21,6 +22,8 @@ import { ConfigDrawer } from '@/components/config-drawer'
 import { Header } from '@/components/layout/header'
 import { Main } from '@/components/layout/main'
 import { ThemeSwitch } from '@/components/theme-switch'
+import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet'
+import { useIsMobile } from '@/hooks/use-mobile'
 import { bots } from '../data/bots'
 import { mockConversationsByBot, type ChatMessage } from '../data/conversations'
 
@@ -28,6 +31,8 @@ export function ChatDetail() {
   const { id, chatId } = ChatDetailRoute.useParams()
   const navigate = useNavigate()
   const [searchQuery, setSearchQuery] = useState('')
+  const [sidebarOpen, setSidebarOpen] = useState(false)
+  const isMobile = useIsMobile()
 
   const bot = bots.find((b) => b.id === id)
   const allConversations = useMemo(() => mockConversationsByBot[id] || [], [id])
@@ -135,7 +140,7 @@ export function ChatDetail() {
       <Main fixed className='flex h-full flex-col overflow-hidden'>
         <div className='flex h-full gap-0 overflow-hidden'>
           {/* Sidebar - Conversations List */}
-          <div className='bg-muted/30 flex w-64 shrink-0 flex-col border-r sm:w-80'>
+          <div className='bg-muted/30 hidden w-64 shrink-0 flex-col border-r sm:flex sm:w-80'>
             {/* Sidebar Header */}
             <div className='bg-background flex h-[73px] shrink-0 items-center gap-2 border-b py-4'>
               <Button
@@ -198,15 +203,15 @@ export function ChatDetail() {
                       ''
 
                     return (
-                      <button
-                        key={conversation.id}
-                        onClick={() => {
-                          navigate({
-                            to: '/chatbox/project/$id/recent/$chatId',
-                            params: { id, chatId: conversation.id },
-                          })
-                        }}
-                        className={cn(
+                    <button
+                      key={conversation.id}
+                      onClick={() => {
+                        navigate({
+                          to: '/chatbox/project/$id/recent/$chatId',
+                          params: { id, chatId: conversation.id },
+                        })
+                      }}
+                      className={cn(
                           'hover:bg-muted/50 flex flex-col gap-2 border-b p-4 text-left transition-colors',
                           selectedConversation.id === conversation.id &&
                             'bg-muted'
@@ -231,22 +236,22 @@ export function ChatDetail() {
                           <div className='flex items-center gap-1.5'>
                             <User className='text-muted-foreground h-3.5 w-3.5 shrink-0' />
                             <p className='text-muted-foreground text-xs'>
-                              {conversation.userName}
-                            </p>
+                            {conversation.userName}
+                          </p>
                           </div>
 
                           {/* Last message time */}
                           <div className='flex items-center gap-1.5'>
                             <Clock className='text-muted-foreground h-3.5 w-3.5 shrink-0' />
                             <p className='text-muted-foreground text-xs'>
-                              {format(
-                                new Date(conversation.lastMessageTime),
-                                'MM月dd日 HH:mm'
-                              )}
-                            </p>
-                          </div>
+                            {format(
+                              new Date(conversation.lastMessageTime),
+                              'MM月dd日 HH:mm'
+                            )}
+                          </p>
                         </div>
-                      </button>
+                      </div>
+                    </button>
                     )
                   })
                 )}
@@ -258,6 +263,145 @@ export function ChatDetail() {
           <div className='flex min-w-0 flex-1 flex-col overflow-hidden'>
             {/* Chat Header */}
             <div className='bg-background flex shrink-0 items-center gap-3 border-b p-4'>
+              {/* Mobile Sidebar Toggle */}
+              {isMobile && (
+                <Sheet open={sidebarOpen} onOpenChange={setSidebarOpen}>
+                  <SheetTrigger asChild>
+                    <Button variant='ghost' size='icon' className='h-8 w-8'>
+                      <Menu className='h-4 w-4' />
+                      <span className='sr-only'>メニューを開く</span>
+                    </Button>
+                  </SheetTrigger>
+                  <SheetContent side='left' className='w-80 p-0'>
+                    <div className='bg-muted/30 flex h-full flex-col'>
+                      {/* Sidebar Header */}
+                      <div className='bg-background flex h-[73px] shrink-0 items-center gap-2 border-b py-4 px-4'>
+                        <Button
+                          variant='ghost'
+                          size='icon'
+                          onClick={() => {
+                            setSidebarOpen(false)
+                            navigate({
+                              to: '/chatbox/project/$id/recent',
+                              params: { id },
+                            })
+                          }}
+                          className='h-8 w-8'
+                        >
+                          <ArrowLeft className='h-4 w-4' />
+                        </Button>
+                        <div className='flex items-center gap-2'>
+                          <div className='flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-blue-500 to-purple-600'>
+                            <BotIcon className='h-4 w-4 text-white' />
+                          </div>
+                          <div className='flex flex-col'>
+                            <h2 className='max-w-full truncate text-lg font-semibold'>
+                              {bot.name}
+                            </h2>
+                            <p className='text-muted-foreground text-xs'>
+                              チャット履歴
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Search */}
+                      <div className='bg-background shrink-0 border-b p-4'>
+                        <div className='relative'>
+                          <SearchIcon className='text-muted-foreground absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2' />
+                          <Input
+                            placeholder='チャットを検索...'
+                            value={searchQuery}
+                            onChange={(e) => setSearchQuery(e.target.value)}
+                            className='pl-9'
+                          />
+                        </div>
+                      </div>
+
+                      {/* Conversations List */}
+                      <ScrollArea className='min-h-0 flex-1'>
+                        <div className='flex flex-col'>
+                          {filteredConversations.length === 0 ? (
+                            <div className='flex flex-col items-center justify-center py-12 text-center'>
+                              <p className='text-muted-foreground text-sm'>
+                                {searchQuery.trim()
+                                  ? '検索結果が見つかりませんでした'
+                                  : 'チャット履歴がありません'}
+                              </p>
+                            </div>
+                          ) : (
+                            filteredConversations.map((conversation) => {
+                              // Get first message content
+                              const firstMessage =
+                                conversation.messages.find(
+                                  (msg) => msg.sender === 'user'
+                                )?.message ||
+                                conversation.messages[0]?.message ||
+                                ''
+
+                              return (
+                                <button
+                                  key={conversation.id}
+                                  onClick={() => {
+                                    setSidebarOpen(false)
+                                    navigate({
+                                      to: '/chatbox/project/$id/recent/$chatId',
+                                      params: { id, chatId: conversation.id },
+                                    })
+                                  }}
+                                  className={cn(
+                                    'hover:bg-muted/50 flex flex-col gap-2 border-b p-4 text-left transition-colors',
+                                    selectedConversation.id === conversation.id &&
+                                      'bg-muted'
+                                  )}
+                                >
+                                  {/* First message content */}
+                                  <p className='text-foreground line-clamp-1 text-[14px]'>
+                                    {firstMessage}
+                                  </p>
+
+                                  {/* Message count and user name */}
+                                  <div className='flex flex-wrap items-center gap-x-4 gap-y-2'>
+                                    {/* Message count */}
+                                    <div className='flex items-center gap-1.5'>
+                                      <MessageSquareMore className='text-muted-foreground h-3.5 w-3.5 shrink-0' />
+                                      <p className='text-muted-foreground text-xs'>
+                                        {conversation.messageCount} メッセージ
+                                      </p>
+                                    </div>
+
+                                    {/* User name */}
+                                    <div className='flex items-center gap-1.5'>
+                                      <User className='text-muted-foreground h-3.5 w-3.5 shrink-0' />
+                                      <p className='text-muted-foreground text-xs'>
+                                        {conversation.userName}
+                                      </p>
+                                    </div>
+
+                                    {/* Last message time */}
+                                    <div className='flex items-center gap-1.5'>
+                                      <Clock className='text-muted-foreground h-3.5 w-3.5 shrink-0' />
+                                      <p className='text-muted-foreground text-xs'>
+                                        {format(
+                                          new Date(
+                                            conversation.lastMessageTime
+                                          ),
+                                          'MM月dd日 HH:mm'
+                                        )}
+                                      </p>
+                                    </div>
+                                  </div>
+                                </button>
+                              )
+                            })
+                          )}
+                        </div>
+                      </ScrollArea>
+                    </div>
+                  </SheetContent>
+                </Sheet>
+              )}
+
               <Button
                 variant='ghost'
                 size='icon'
@@ -267,7 +411,7 @@ export function ChatDetail() {
                     params: { id },
                   })
                 }
-                className='sm:hidden'
+                className={isMobile ? 'hidden' : 'h-8 w-8'}
               >
                 <ArrowLeft className='h-4 w-4' />
               </Button>
