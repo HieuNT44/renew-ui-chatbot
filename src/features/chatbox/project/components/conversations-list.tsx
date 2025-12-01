@@ -54,7 +54,6 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from '@/components/ui/popover'
-import { ScrollArea } from '@/components/ui/scroll-area'
 import {
   Select,
   SelectContent,
@@ -192,13 +191,13 @@ export function ConversationsList() {
 
     // Search filter
     if (searchQuery.trim()) {
-      const query = searchQuery.toLowerCase()
+    const query = searchQuery.toLowerCase()
       filtered = filtered.filter(
-        (conv) =>
-          conv.title.toLowerCase().includes(query) ||
-          conv.lastMessage.toLowerCase().includes(query) ||
-          conv.userName.toLowerCase().includes(query)
-      )
+      (conv) =>
+        conv.title.toLowerCase().includes(query) ||
+        conv.lastMessage.toLowerCase().includes(query) ||
+        conv.userName.toLowerCase().includes(query)
+    )
     }
 
     // Date range filter
@@ -486,31 +485,30 @@ export function ConversationsList() {
         </div>
       </Header>
 
-      <Main fixed className='flex h-full flex-col'>
-        <div className='bg-background flex h-full flex-col'>
-          {/* Header Section */}
-          <div className='bg-background flex shrink-0 items-center gap-2 border-b pb-4'>
-            <Button
-              variant='ghost'
-              size='icon'
-              onClick={() => navigate({ to: '/chatbox/project' })}
-              className='h-8 w-8'
-            >
-              <ArrowLeft className='h-4 w-4' />
-            </Button>
-            <div className='flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-blue-500 to-purple-600'>
-              <BotIcon className='h-4 w-4 text-white' />
-            </div>
-            <div className='flex items-center gap-2'>
-              <h2 className='text-xl font-bold'>{bot.name}</h2>
-              <span className='text-muted-foreground text-sm'>
-                チャット履歴
-              </span>
-            </div>
+      <Main className='flex flex-1 flex-col gap-4 sm:gap-6'>
+        {/* Header Section */}
+        <div className='flex items-center gap-2'>
+              <Button
+                variant='ghost'
+                size='icon'
+                onClick={() => navigate({ to: '/chatbox/project' })}
+                className='h-8 w-8'
+              >
+                <ArrowLeft className='h-4 w-4' />
+              </Button>
+          <div className='flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-blue-500 to-purple-600'>
+            <BotIcon className='h-4 w-4 text-white' />
           </div>
+          <div className='flex items-center gap-2'>
+            <h2 className='text-xl font-bold'>{bot.name}</h2>
+            <span className='text-muted-foreground text-sm'>
+              チャット履歴
+            </span>
+          </div>
+        </div>
 
-          {/* Statistics Section */}
-          <div className='bg-background shrink-0 border-b p-4'>
+        {/* Statistics Section */}
+        <div>
             <div className='grid grid-cols-1 gap-4 sm:grid-cols-3'>
               {/* Users Card */}
               <Card>
@@ -626,119 +624,116 @@ export function ConversationsList() {
             </div>
           </div>
 
-          {/* Filter Section */}
-          <div className='bg-background shrink-0 border-b p-4'>
-            <div className='flex flex-col gap-4'>
-              {/* Filter Row */}
-              <div className='flex flex-col gap-4 sm:flex-row'>
-                {/* Search */}
-                <div className='relative flex-1'>
-                  <SearchIcon className='text-muted-foreground absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2' />
-                  <Input
-                    placeholder='チャットを検索...'
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    className='pl-9'
-                  />
-                </div>
+        {/* Filter Section */}
+        <div className='flex flex-col gap-4'>
+          {/* Filter Row */}
+          <div className='flex flex-col gap-4 sm:flex-row'>
+          {/* Search */}
+            <div className='relative flex-1'>
+              <SearchIcon className='text-muted-foreground absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2' />
+              <Input
+                placeholder='チャットを検索...'
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className='pl-9'
+              />
+            </div>
 
-                <div className='flex w-full sm:w-[250px] sm:min-w-[250px]'>
-                  <UserCombobox
-                    users={uniqueUsers}
-                    selectedUserId={selectedUserId}
-                    onSelect={setSelectedUserId}
-                  />
-                </div>
+            <div className='flex w-full sm:w-[250px] sm:min-w-[250px]'>
+              <UserCombobox
+                users={uniqueUsers}
+                selectedUserId={selectedUserId}
+                onSelect={setSelectedUserId}
+              />
+            </div>
 
-                {/* Date Range and User Filter */}
-                <div className='flex w-full flex-wrap items-center gap-2 sm:w-fit sm:flex-nowrap'>
-                  {/* Start Date */}
-                  <div className='flex-1 sm:flex-none'>
-                    <DatePicker
-                      selected={startDate}
-                      onSelect={setStartDate}
-                      placeholder='開始日を選択'
-                    />
-                  </div>
-                  <span className='text-muted-foreground shrink-0 text-xs'>
-                    〜
-                  </span>
-                  {/* End Date */}
-                  <div className='flex-1 sm:flex-none'>
-                    <DatePicker
-                      selected={endDate}
-                      onSelect={setEndDate}
-                      placeholder='終了日を選択'
-                    />
-                  </div>
-                </div>
+            {/* Date Range and User Filter */}
+            <div className='flex w-full flex-wrap items-center gap-2 sm:w-fit sm:flex-nowrap'>
+              {/* Start Date */}
+              <div className='flex-1 sm:flex-none'>
+                <DatePicker
+                  selected={startDate}
+                  onSelect={setStartDate}
+                  placeholder='開始日を選択'
+                />
               </div>
-
-              {/* Selection Action Bar */}
-              <div className='flex min-h-[30px] flex-wrap items-center justify-between gap-2'>
-                <div className='flex flex-wrap items-center gap-2'>
-                  {selectedConversations.size > 0 ? (
-                    <>
-                      <p className='text-muted-foreground text-sm'>
-                        {selectedConversations.size} selected
-                      </p>
-                      <Button
-                        variant='ghost'
-                        size='icon'
-                        className='h-8 w-8 text-red-600 hover:bg-red-50 hover:text-red-700 dark:text-red-400 dark:hover:bg-red-950/20 dark:hover:text-red-300'
-                        onClick={() => {
-                          setDeleteDialogOpen(true)
-                        }}
-                      >
-                        <Trash2 className='h-4 w-4' />
-                        <span className='sr-only'>削除</span>
-                      </Button>
-                      <Button
-                        variant='ghost'
-                        size='icon'
-                        className='h-8 w-8 text-blue-600 hover:bg-blue-50 hover:text-blue-700 dark:text-blue-400 dark:hover:bg-blue-950/20 dark:hover:text-blue-300'
-                        onClick={handleExport}
-                      >
-                        <Download className='h-4 w-4' />
-                        <span className='sr-only'>エクスポート</span>
-                      </Button>
-                      <Button
-                        variant='ghost'
-                        size='icon'
-                        className='h-8 w-8'
-                        onClick={() => {
-                          setSelectedConversations(new Set())
-                        }}
-                      >
-                        <X className='h-4 w-4' />
-                        <span className='sr-only'>選択を解除</span>
-                      </Button>
-                    </>
-                  ) : (
-                    <>
-                      <p className='text-muted-foreground text-sm'>
-                        {sortedConversations.length} チャット
-                      </p>
-                      <button
-                        className='text-primary cursor-pointer text-sm font-medium underline hover:underline'
-                        onClick={() => {
-                          const allIds = new Set(
-                            displayedConversations.map((conv) => conv.id)
-                          )
-                          setSelectedConversations(allIds)
-                        }}
-                      >
-                        全選択
-                      </button>
-                    </>
-                  )}
-                </div>
+              <span className='text-muted-foreground shrink-0 text-xs'>
+                〜
+              </span>
+              {/* End Date */}
+              <div className='flex-1 sm:flex-none'>
+                <DatePicker
+                  selected={endDate}
+                  onSelect={setEndDate}
+                  placeholder='終了日を選択'
+                />
               </div>
             </div>
           </div>
 
+          {/* Selection Action Bar */}
+          <div className='flex min-h-[30px] flex-wrap items-center justify-between gap-2'>
+            <div className='flex flex-wrap items-center gap-2'>
+              {selectedConversations.size > 0 ? (
+                <>
+                  <p className='text-muted-foreground text-sm'>
+                    {selectedConversations.size} selected
+                  </p>
+                  <Button
+                    variant='ghost'
+                    size='icon'
+                    className='h-8 w-8 text-red-600 hover:bg-red-50 hover:text-red-700 dark:text-red-400 dark:hover:bg-red-950/20 dark:hover:text-red-300'
+                    onClick={() => {
+                      setDeleteDialogOpen(true)
+                    }}
+                  >
+                    <Trash2 className='h-4 w-4' />
+                    <span className='sr-only'>削除</span>
+                  </Button>
+                  <Button
+                    variant='ghost'
+                    size='icon'
+                    className='h-8 w-8 text-blue-600 hover:bg-blue-50 hover:text-blue-700 dark:text-blue-400 dark:hover:bg-blue-950/20 dark:hover:text-blue-300'
+                    onClick={handleExport}
+                  >
+                    <Download className='h-4 w-4' />
+                    <span className='sr-only'>エクスポート</span>
+                  </Button>
+              <Button
+                    variant='ghost'
+                    size='icon'
+                    className='h-8 w-8'
+                onClick={() => {
+                      setSelectedConversations(new Set())
+                }}
+              >
+                    <X className='h-4 w-4' />
+                    <span className='sr-only'>選択を解除</span>
+              </Button>
+                </>
+              ) : (
+                <>
+                  <p className='text-muted-foreground text-sm'>
+                    {sortedConversations.length} チャット
+                  </p>
+                  <button
+                    className='text-primary cursor-pointer text-sm font-medium underline hover:underline'
+                    onClick={() => {
+                      const allIds = new Set(
+                        displayedConversations.map((conv) => conv.id)
+                      )
+                      setSelectedConversations(allIds)
+                    }}
+                  >
+                    全選択
+                  </button>
+                </>
+              )}
+            </div>
+            </div>
+          </div>
+
           {/* Conversations List */}
-          <ScrollArea className='h-0 flex-1'>
             <div className='flex flex-col'>
               {displayedConversations.length === 0 ? (
                 <div className='flex flex-col items-center justify-center py-12 text-center'>
@@ -764,8 +759,8 @@ export function ConversationsList() {
                     )
 
                     return (
-                      <div
-                        key={conversation.id}
+                  <div
+                    key={conversation.id}
                         className={cn(
                           'hover:bg-muted/50 flex flex-col gap-3 border-b p-4 transition-colors sm:flex-row sm:items-start sm:justify-between',
                           isSelected && 'bg-muted/30'
@@ -919,11 +914,9 @@ export function ConversationsList() {
                     className='w-full sm:w-auto'
                   >
                     もっと見る
-                  </Button>
-                </div>
+                    </Button>
+                  </div>
               )}
-            </div>
-          </ScrollArea>
         </div>
       </Main>
 
